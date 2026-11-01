@@ -1,6 +1,11 @@
-# Archivos de análisis y documentación local
-analisis_datasets.md
-
 # Metadatos del sistema (Windows / WSL)
 *Zone.Identifier
 *.Zone.Identifier
+
+# Entornos y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
