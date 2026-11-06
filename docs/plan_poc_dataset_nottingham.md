@@ -153,14 +153,13 @@ Una vez validados los archivos intermedios en la Fase 1, la Fase 2 genera una fi
 - No se generan pares de una materia consigo misma `(A, A)`.
 - Se calculan de forma estrictamente separada las intersecciones de estudiantes del **grupo de referencia histórico (cohortes 1989–1993)** y del **grupo actual (cohorte 1994)**, sin mezclar estudiantes de ambos grupos.
 
-#### Evaluación de pares con cero estudiantes compartidos (ejemplos negativos)
+#### Inclusión de los 319.600 pares posibles (incluidos pares con cero estudiantes compartidos)
 
-Con 800 materias existen $\binom{800}{2} = 319.600$ pares posibles.
-- En el semestre completo, **10.113 pares** tienen al menos un estudiante compartido (en cualquiera de las cohortes), mientras que otros pares tienen intersección en un grupo y `0` en el otro, o `0` en ambos.
-- Para entrenar modelos de clasificación (`hubo_conflicto_potencial`), es indispensable contar con **ejemplos negativos** (`cant_estudiantes_afectados == 0` en la cohorte 1994).
-- **Estrategia en Fase 2:**
-  1. Incluir todos los pares activos (por ejemplo, aquellos que tienen $\ge 1$ estudiante compartido en el histórico `1989–1993` pero `0` en `1994`, que constituyen ejemplos negativos naturales y difíciles, o todos los pares dentro de carreras/departamentos vinculados).
-  2. Proveer en el generador una opción reproducible y documentada para exportar tanto el conjunto de pares con actividad observada como un muestreo estratificado/controlado de pares con cero estudiantes compartidos, evitando un desbalance extremo de 309.487 ceros triviales.
+Con 800 materias existen exactamente $\binom{800}{2} = 319.600$ pares posibles.
+- La salida `data/processed/subject_pairs_poc.csv` **contiene los 319.600 pares posibles**, incluidos los pares sin estudiantes compartidos (`0` en ambos grupos), por tres razones fundamentales:
+  1. Para entrenar modelos de clasificación (`hubo_conflicto_potencial`), es indispensable contar con **ejemplos negativos** (`cant_estudiantes_afectados == 0` en la cohorte 1994).
+  2. Existen pares con actividad en el grupo histórico (`1989–1993`) pero `0` en `1994` (5.645 pares) y viceversa (3.481 pares), además de 987 pares activos en ambos y 309.487 con `0` en ambos. Conservar los 319.600 pares evita cualquier sesgo de selección en la tabla base.
+  3. Cualquier submuestreo o balanceo de clases negativo para el entrenamiento posterior de ML puede aplicarse de forma parametrizada y reproducible sobre este universo completo.
 
 ### 5.2. Incorporación de atributos académicos (Etapa 3)
 
@@ -211,26 +210,33 @@ Dado que el dataset de Nottingham corresponde a **un único semestre académico 
 
 ### 5.4. Salida de la Fase 2 (`data/processed/subject_pairs_poc.csv`)
 
-Columnas mínimas en `subject_pairs_poc.csv`:
+El archivo `data/processed/subject_pairs_poc.csv` contiene las **319.600 filas** ($\binom{800}{2}$ pares posibles) con las siguientes 24 columnas documentadas:
 
 ```text
 materia_id_1
 materia_id_2
 materia_nombre_1
 materia_nombre_2
-mismo_anio
-anio_confirmado
-misma_carrera
+departamento_1
+departamento_2
 mismo_departamento
+mismo_prefijo_curricular
+anio_1
+anio_2
+anio_confirmado
+mismo_anio
+misma_carrera
+cant_carreras_compartidas_hist
+cant_inscriptos_hist_1
+cant_inscriptos_hist_2
 cant_estudiantes_compartidos_historico
 tasa_compartidos_historico
+jaccard_historico
+cant_inscriptos_actual_1
+cant_inscriptos_actual_2
 cant_estudiantes_afectados
 tasa_afectados_actual
 hubo_conflicto_potencial
-cant_inscriptos_hist_1
-cant_inscriptos_hist_2
-cant_inscriptos_actual_1
-cant_inscriptos_actual_2
 ```
 
 ---
