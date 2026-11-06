@@ -18,15 +18,16 @@ Decisiones técnicas implementadas:
    - En `ml_train_balanced.csv` (6.996 pares) se conservan todos los 3.498 pares
      positivos de entrenamiento y se seleccionan aleatoriamente sin reemplazo
      3.498 pares negativos de entrenamiento (`RANDOM_SEED = 42`).
-3. Selección estricta de variables sin Data Leakage ni identificadores:
+3. Selección estricta de variables sin Data Leakage:
    - Se excluyen todas las variables de la cohorte 1994 que no son target
      (`cant_inscriptos_actual_1`, `cant_inscriptos_actual_2`, `tasa_afectados_actual`)
-     y los identificadores/descriptores (`materia_id_1`, `materia_id_2`,
-     `materia_nombre_1`, `materia_nombre_2`, `departamento_1`, `departamento_2`,
-     `anio_1`, `anio_2`).
-   - Se conservan los nombres originales de las 11 variables predictoras limpias
-     más las 2 variables objetivo (`cant_estudiantes_afectados` y
-     `hubo_conflicto_potencial`).
+     y los metadatos descriptivos o con nulos estructurales (`materia_nombre_1`,
+     `materia_nombre_2`, `departamento_1`, `departamento_2`, `anio_1`, `anio_2`).
+   - Se conservan `materia_id_1` y `materia_id_2` únicamente como columnas de
+     identificación (`ID_COLUMNS`, NO predictoras) para poder vincular las
+     predicciones de los modelos con las aristas del grafo de conflictos, junto
+     con las 11 variables predictoras limpias (`PREDICTOR_COLUMNS`) y las 2
+     variables objetivo (`cant_estudiantes_afectados` y `hubo_conflicto_potencial`).
 """
 
 from __future__ import annotations
@@ -50,7 +51,13 @@ TRAIN_BALANCED_FILENAME = "ml_train_balanced.csv"
 TEST_FULL_FILENAME = "ml_test_full.csv"
 TRAIN_FULL_FILENAME = "ml_train_full.csv"
 
-# 11 variables predictoras limpias (calculadas solo con catálogo y cohortes 1989-1993)
+# Columnas de identificación del par (solo para trazabilidad y armado del grafo; NO usar en X)
+ID_COLUMNS: List[str] = [
+    "materia_id_1",
+    "materia_id_2",
+]
+
+# 11 variables predictoras limpias por defecto (calculadas solo con catálogo y cohortes 1989-1993)
 PREDICTOR_COLUMNS: List[str] = [
     "mismo_departamento",
     "mismo_prefijo_curricular",
@@ -84,10 +91,8 @@ TARGET_REGRESSION = "cant_estudiantes_afectados"
 TARGET_CLASSIFICATION = "hubo_conflicto_potencial"
 TARGET_COLUMNS: List[str] = [TARGET_REGRESSION, TARGET_CLASSIFICATION]
 
-# Columnas excluidas por ser identificadores, texto descriptivo o tener nulos estructurales
-EXCLUDED_DESCRIPTIVE_OR_ID_COLUMNS: List[str] = [
-    "materia_id_1",
-    "materia_id_2",
+# Columnas excluidas por ser texto descriptivo, alta cardinalidad redundante o tener nulos estructurales
+EXCLUDED_DESCRIPTIVE_COLUMNS: List[str] = [
     "materia_nombre_1",
     "materia_nombre_2",
     "departamento_1",
@@ -96,14 +101,14 @@ EXCLUDED_DESCRIPTIVE_OR_ID_COLUMNS: List[str] = [
     "anio_2",
 ]
 
-# Columnas excluidas por riesgo directo de Data Leakage (derivadas de la cohorte 1994)
+# Columnas excluidas físicamente por riesgo directo de Data Leakage (derivadas de la cohorte 1994)
 EXCLUDED_LEAKAGE_COLUMNS: List[str] = [
     "cant_inscriptos_actual_1",
     "cant_inscriptos_actual_2",
     "tasa_afectados_actual",
 ]
 
-ML_OUTPUT_COLUMNS: List[str] = PREDICTOR_COLUMNS + TARGET_COLUMNS
+ML_OUTPUT_COLUMNS: List[str] = ID_COLUMNS + PREDICTOR_COLUMNS + TARGET_COLUMNS
 
 
 @dataclass

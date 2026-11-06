@@ -77,11 +77,13 @@ Estas columnas fueron eliminadas de los archivos de ML para impedir que se utili
 * `cant_inscriptos_actual_2`: cantidad de alumnos de la cohorte 1994 en la materia 2.
 * `tasa_afectados_actual`: es igual a `cant_estudiantes_afectados / 3086` (transformación directa de la etiqueta objetivo).
 
-### 4.2. Variables EXCLUIDAS por ser Identificadores, Texto o Metadatos Crudos
-* `materia_id_1`, `materia_id_2`: identificadores alfanuméricos de los nodos.
-* `materia_nombre_1`, `materia_nombre_2`: nombres descriptivos en texto libre.
-* `departamento_1`, `departamento_2`: códigos categóricos nominales (46 valores); su relación ya está capturada en el booleano `mismo_departamento`.
-* `anio_1`, `anio_2`: contienen valores vacíos (`null`) en los 258 exámenes con código especial (`A, B, C, P, 0`); su información limpia y sin nulos ya está capturada en `anio_confirmado` y `mismo_anio`.
+### 4.2. Variables de Identificación del Par (`ID_COLUMNS`) vs. Variables Excluidas
+* **Conservadas únicamente para trazabilidad del grafo (`ID_COLUMNS`, NO usar como predictores en `X`):**
+  * `materia_id_1`, `materia_id_2`: se mantienen como las dos primeras columnas de `ml_train_balanced.csv`, `ml_train_full.csv` y `ml_test_full.csv` para que cada predicción generada por los modelos pueda asociarse de inmediato a la arista correspondiente $(u, v)$ del grafo de conflictos, además de garantizar que cada fila sea unívoca. **Deben excluirse al construir la matriz `X` de entrenamiento y prueba.**
+* **Excluidas físicamente de los archivos de ML:**
+  * `materia_nombre_1`, `materia_nombre_2`: nombres descriptivos en texto libre (disponibles en `exams_clean.csv` y `subject_pairs_poc.csv`).
+  * `departamento_1`, `departamento_2`: códigos categóricos nominales (46 valores); su relación ya está capturada en el booleano `mismo_departamento`.
+  * `anio_1`, `anio_2`: contienen valores vacíos (`null`) en los 258 exámenes con código especial (`A, B, C, P, 0`); su información limpia y sin nulos ya está capturada en `anio_confirmado` y `mismo_anio`.
 
 ### 4.3. Variables Predictoras Incluidas (11 Features limpias — Cohortes 1989–1993 y Catálogo)
 Todas las variables predictoras incluidas en los archivos de ML conservan sus nombres originales y están libres de valores nulos:
@@ -132,3 +134,42 @@ El integrante encargado de entrenar y evaluar los modelos de Machine Learning de
 3. **Efecto del entrenamiento 50/50 sobre la precisión en Test (Desplazamiento de Probabilidad Previa):** Un modelo entrenado en `ml_train_balanced.csv` asume una probabilidad a priori del 50%. Al predecir sobre `ml_test_full.csv` (donde la probabilidad a priori real es 1,49%), producirá un **Recall alto** (detectará la mayoría de los conflictos reales), pero con un umbral de probabilidad estándar de $0,5$ generará bastantes **Falsos Positivos** (baja Precision). En el contexto de coloreo de grafos, **elevar el umbral de decisión** (por ejemplo a $0,7$ o $0,8$, tal como pide el selector de umbral del frontend en el enunciado) permite controlar el equilibrio entre conflictos evitados y cantidad de turnos (colores) requeridos.
 4. **Brecha entre materias de 1.er año y años superiores (Aproximación por Cohortes):** Dado que `historico_1989_1993` contiene alumnos ingresantes entre 1989 y 1993 (que en el semestre 1994–95 cursan mayoritariamente 2.do y 3.er año) y `actual_1994` contiene ingresantes 1994 (que cursan mayoritariamente 1.er año), existen pares de materias de 1.er año donde `cant_estudiantes_compartidos_historico == 0` pero `hubo_conflicto_potencial == True`. En esos casos, el modelo depende de las variables estructurales (`mismo_departamento`, `mismo_prefijo_curricular`, `mismo_anio`, `misma_carrera`) para predecir el conflicto.
 5. **Estandarización para KNN y Regresión:** Antes de entrenar KNN o Regresión Lineal/Logística, se deben escalar las variables numéricas de conteo (`cant_inscriptos_hist_1`, `cant_inscriptos_hist_2`, `cant_estudiantes_compartidos_historico`, `cant_carreras_compartidas_hist`) ajustando el `StandardScaler` **únicamente sobre el conjunto de entrenamiento** (`fit_transform` en Train, `transform` en Test).
+
+---
+
+## 7. Indicaciones para la Fase 3 — Entrenamiento y comparación de modelos
+
+El dataset queda preparado para que el integrante responsable de Machine Learning experimente con los modelos exigidos por el TP.
+
+Se deberán evaluar dos enfoques:
+
+**Clasificación:** predecir `hubo_conflicto_potencial`.
+
+- Regresión Logística.
+- KNeighborsClassifier.
+- DecisionTreeClassifier.
+
+**Regresión:** predecir `cant_estudiantes_afectados`.
+
+- Regresión Lineal.
+- KNeighborsRegressor.
+- DecisionTreeRegressor.
+
+### Consideraciones para los experimentos
+
+- Para clasificación, comparar el entrenamiento con `ml_train_balanced.csv` y `ml_train_full.csv`, evaluando alternativas de ponderación de clases cuando estén disponibles.
+- Para regresión, utilizar inicialmente `ml_train_full.csv`, ya que el undersampling se realizó en función del target de clasificación y modifica la distribución de cantidades de estudiantes afectados.
+- Utilizar `ml_test_full.csv` para la evaluación final de ambos enfoques.
+- Aplicar escalado de variables en KNN, ajustándolo exclusivamente con los datos de entrenamiento.
+- Seleccionar hiperparámetros y umbrales mediante validación, sin utilizar el conjunto de test para tomar decisiones.
+- Al armar la matriz `X`, retirar siempre las columnas de identificación del par (`materia_id_1`, `materia_id_2`) y ambas columnas objetivo (`cant_estudiantes_afectados`, `hubo_conflicto_potencial`).
+
+### Selección del modelo
+
+No se establece de antemano un algoritmo ganador. La elección deberá justificarse mediante métricas adecuadas, comparación de resultados y análisis de sus limitaciones.
+
+Para clasificación se priorizarán Precision, Recall, F1-score de la clase positiva, PR-AUC y matriz de confusión.
+
+Para regresión se utilizarán MAE y RMSE, complementados con un análisis del comportamiento de las predicciones sobre valores cero y cantidades elevadas de estudiantes afectados.
+
+El resultado deberá conservar la identificación de cada par de materias (`materia_id_1`, `materia_id_2`) y generar las predicciones correspondientes, para su posterior utilización en la construcción del grafo de conflictos.
