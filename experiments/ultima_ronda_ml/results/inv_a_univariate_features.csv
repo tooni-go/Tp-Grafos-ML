@@ -1,0 +1,11 @@
+feature,nonzero_pct_subtrain,mean_when_y1_subtrain,mean_when_y0_subtrain,pos_rate_when_gt0_pct,pos_rate_when_eq0_pct,pearson_corr_subtrain,univariate_roc_auc_val,univariate_pr_auc_val
+mismo_departamento,2.724,0.1922,0.0249,9.877,1.163,0.1207,0.6127,0.0392
+mismo_prefijo_curricular,2.744,0.2066,0.0249,10.541,1.142,0.1307,0.6149,0.04
+anio_confirmado,45.958,0.5406,0.4584,1.647,1.19,0.0194,0.5008,0.0128
+mismo_anio,15.371,0.4788,0.1491,4.362,0.862,0.1074,0.6263,0.0212
+misma_carrera,8.961,0.47,0.0842,7.344,0.815,0.1587,0.6743,0.0371
+cant_carreras_compartidas_hist,8.961,0.8396,0.1169,7.344,0.815,0.1757,0.6767,0.0534
+cant_inscriptos_hist_1,93.784,17.3089,28.0801,1.418,1.136,-0.0383,0.4052,0.0104
+cant_inscriptos_hist_2,96.483,17.6894,21.3909,1.399,1.432,-0.0163,0.42,0.012
+cant_estudiantes_compartidos_historico,2.116,2.0716,0.0803,14.556,1.116,0.1248,0.6146,0.1025
+jaccard_historico,2.116,0.0475,0.0015,14.556,1.116,0.1853,0.6152,0.1203

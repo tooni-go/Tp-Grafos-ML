@@ -1,0 +1,409 @@
+{
+  "high_correlations_subtrain": [
+    {
+      "feature_1": "mismo_departamento",
+      "feature_2": "mismo_prefijo_curricular",
+      "pearson_r": 0.9088
+    },
+    {
+      "feature_1": "misma_carrera",
+      "feature_2": "cant_carreras_compartidas_hist",
+      "pearson_r": 0.838
+    },
+    {
+      "feature_1": "cant_estudiantes_compartidos_historico",
+      "feature_2": "jaccard_historico",
+      "pearson_r": 0.7562
+    },
+    {
+      "feature_1": "anio_confirmado",
+      "feature_2": "mismo_anio",
+      "pearson_r": 0.4621
+    },
+    {
+      "feature_1": "mismo_prefijo_curricular",
+      "feature_2": "cant_carreras_compartidas_hist",
+      "pearson_r": 0.4044
+    },
+    {
+      "feature_1": "mismo_departamento",
+      "feature_2": "cant_carreras_compartidas_hist",
+      "pearson_r": 0.3937
+    },
+    {
+      "feature_1": "mismo_prefijo_curricular",
+      "feature_2": "misma_carrera",
+      "pearson_r": 0.3484
+    },
+    {
+      "feature_1": "mismo_departamento",
+      "feature_2": "misma_carrera",
+      "pearson_r": 0.3376
+    },
+    {
+      "feature_1": "mismo_prefijo_curricular",
+      "feature_2": "jaccard_historico",
+      "pearson_r": 0.2916
+    },
+    {
+      "feature_1": "cant_carreras_compartidas_hist",
+      "feature_2": "jaccard_historico",
+      "pearson_r": 0.2873
+    },
+    {
+      "feature_1": "mismo_departamento",
+      "feature_2": "jaccard_historico",
+      "pearson_r": 0.2782
+    },
+    {
+      "feature_1": "cant_carreras_compartidas_hist",
+      "feature_2": "cant_estudiantes_compartidos_historico",
+      "pearson_r": 0.2769
+    },
+    {
+      "feature_1": "misma_carrera",
+      "feature_2": "jaccard_historico",
+      "pearson_r": 0.2295
+    },
+    {
+      "feature_1": "mismo_prefijo_curricular",
+      "feature_2": "cant_estudiantes_compartidos_historico",
+      "pearson_r": 0.2241
+    },
+    {
+      "feature_1": "mismo_departamento",
+      "feature_2": "cant_estudiantes_compartidos_historico",
+      "pearson_r": 0.2139
+    }
+  ],
+  "enrolments_by_level_and_cohort": {
+    "0": {
+      "actual_1994": 110,
+      "historico_1989_1993": 2,
+      "pct_actual_1994": 98.21
+    },
+    "1": {
+      "actual_1994": 10165,
+      "historico_1989_1993": 769,
+      "pct_actual_1994": 92.97
+    },
+    "2": {
+      "actual_1994": 368,
+      "historico_1989_1993": 6717,
+      "pct_actual_1994": 5.19
+    },
+    "3": {
+      "actual_1994": 232,
+      "historico_1989_1993": 5198,
+      "pct_actual_1994": 4.27
+    },
+    "4": {
+      "actual_1994": 5,
+      "historico_1989_1993": 62,
+      "pct_actual_1994": 7.46
+    },
+    "A": {
+      "actual_1994": 2625,
+      "historico_1989_1993": 897,
+      "pct_actual_1994": 74.53
+    },
+    "B": {
+      "actual_1994": 289,
+      "historico_1989_1993": 3957,
+      "pct_actual_1994": 6.81
+    },
+    "C": {
+      "actual_1994": 209,
+      "historico_1989_1993": 2170,
+      "pct_actual_1994": 8.79
+    },
+    "P": {
+      "actual_1994": 196,
+      "historico_1989_1993": 26,
+      "pct_actual_1994": 88.29
+    }
+  },
+  "exams_by_level_summary": {
+    "0": {
+      "total_exams": 5,
+      "exams_with_zero_hist": 3,
+      "exams_with_zero_curr": 0,
+      "mean_n_hist": 0.4,
+      "mean_n_curr": 22.0
+    },
+    "1": {
+      "total_exams": 163,
+      "exams_with_zero_hist": 28,
+      "exams_with_zero_curr": 3,
+      "mean_n_hist": 4.72,
+      "mean_n_curr": 62.36
+    },
+    "2": {
+      "total_exams": 162,
+      "exams_with_zero_hist": 0,
+      "exams_with_zero_curr": 71,
+      "mean_n_hist": 41.46,
+      "mean_n_curr": 2.27
+    },
+    "3": {
+      "total_exams": 213,
+      "exams_with_zero_hist": 2,
+      "exams_with_zero_curr": 145,
+      "mean_n_hist": 24.4,
+      "mean_n_curr": 1.09
+    },
+    "4": {
+      "total_exams": 4,
+      "exams_with_zero_hist": 0,
+      "exams_with_zero_curr": 1,
+      "mean_n_hist": 15.5,
+      "mean_n_curr": 1.25
+    },
+    "A": {
+      "total_exams": 63,
+      "exams_with_zero_hist": 6,
+      "exams_with_zero_curr": 2,
+      "mean_n_hist": 14.24,
+      "mean_n_curr": 41.67
+    },
+    "B": {
+      "total_exams": 107,
+      "exams_with_zero_hist": 0,
+      "exams_with_zero_curr": 36,
+      "mean_n_hist": 36.98,
+      "mean_n_curr": 2.7
+    },
+    "C": {
+      "total_exams": 73,
+      "exams_with_zero_hist": 0,
+      "exams_with_zero_curr": 30,
+      "mean_n_hist": 29.73,
+      "mean_n_curr": 2.86
+    },
+    "P": {
+      "total_exams": 10,
+      "exams_with_zero_hist": 6,
+      "exams_with_zero_curr": 0,
+      "mean_n_hist": 2.6,
+      "mean_n_curr": 19.6
+    }
+  },
+  "zero_signal_analysis": {
+    "subtrain": {
+      "split": "subtrain",
+      "total_pairs": 202566,
+      "total_positives": 2836,
+      "all_positives_with_at_least_one_subject_zero_hist": 228,
+      "all_positives_with_at_least_one_subject_zero_hist_pct": 8.04,
+      "all_positives_with_both_subjects_zero_hist": 17,
+      "all_positives_code_breakdown": {
+        "count": 2836,
+        "same_raw_level_char": 1594,
+        "same_raw_level_char_pct": 56.21,
+        "same_equiv_level_1A_2B_3C": 2367,
+        "same_equiv_level_pct": 83.46,
+        "both_level_1_or_A": 2076,
+        "both_level_1_or_A_pct": 73.2,
+        "at_least_one_level_1_or_A": 2378,
+        "at_least_one_level_1_or_A_pct": 83.85,
+        "same_first_char_faculty": 934,
+        "same_first_char_faculty_pct": 32.93
+      },
+      "all_negatives_code_breakdown": {
+        "count": 199730,
+        "same_raw_level_char": 36106,
+        "same_raw_level_char_pct": 18.08,
+        "same_equiv_level_1A_2B_3C": 62842,
+        "same_equiv_level_pct": 31.46,
+        "both_level_1_or_A": 14034,
+        "both_level_1_or_A_pct": 7.03,
+        "at_least_one_level_1_or_A": 95992,
+        "at_least_one_level_1_or_A_pct": 48.06,
+        "same_first_char_faculty": 17262,
+        "same_first_char_faculty_pct": 8.64
+      },
+      "group_5zeros_total": 154485,
+      "group_5zeros_positives": 613,
+      "group_5zeros_negatives": 153872,
+      "group_5zeros_share_of_all_positives_pct": 21.61,
+      "group_5zeros_positive_rate_pct": 0.397,
+      "group_5zeros_roc_auc_neg_min_hist": 0.5834,
+      "group_5zeros_pr_auc_neg_min_hist": 0.0048,
+      "group_5zeros_roc_auc_neg_max_hist": 0.6401,
+      "group_5zeros_roc_auc_anio_confirmado": 0.3885,
+      "group_5zeros_pos_with_zero_hist_any": 80,
+      "group_5zeros_neg_with_zero_hist_any": 16364,
+      "group_5zeros_pos_both_zero_hist": 2,
+      "group_5zeros_pos_code_breakdown": {
+        "count": 613,
+        "same_raw_level_char": 46,
+        "same_raw_level_char_pct": 7.5,
+        "same_equiv_level_1A_2B_3C": 415,
+        "same_equiv_level_pct": 67.7,
+        "both_level_1_or_A": 401,
+        "both_level_1_or_A_pct": 65.42,
+        "at_least_one_level_1_or_A": 544,
+        "at_least_one_level_1_or_A_pct": 88.74,
+        "same_first_char_faculty": 80,
+        "same_first_char_faculty_pct": 13.05
+      },
+      "group_5zeros_neg_code_breakdown": {
+        "count": 153872,
+        "same_raw_level_char": 5194,
+        "same_raw_level_char_pct": 3.38,
+        "same_equiv_level_1A_2B_3C": 29927,
+        "same_equiv_level_pct": 19.45,
+        "both_level_1_or_A": 5935,
+        "both_level_1_or_A_pct": 3.86,
+        "at_least_one_level_1_or_A": 79058,
+        "at_least_one_level_1_or_A_pct": 51.38,
+        "same_first_char_faculty": 7962,
+        "same_first_char_faculty_pct": 5.17
+      }
+    },
+    "validation": {
+      "split": "validation",
+      "total_pairs": 51975,
+      "total_positives": 662,
+      "all_positives_with_at_least_one_subject_zero_hist": 114,
+      "all_positives_with_at_least_one_subject_zero_hist_pct": 17.22,
+      "all_positives_with_both_subjects_zero_hist": 10,
+      "all_positives_code_breakdown": {
+        "count": 662,
+        "same_raw_level_char": 337,
+        "same_raw_level_char_pct": 50.91,
+        "same_equiv_level_1A_2B_3C": 537,
+        "same_equiv_level_pct": 81.12,
+        "both_level_1_or_A": 454,
+        "both_level_1_or_A_pct": 68.58,
+        "at_least_one_level_1_or_A": 531,
+        "at_least_one_level_1_or_A_pct": 80.21,
+        "same_first_char_faculty": 268,
+        "same_first_char_faculty_pct": 40.48
+      },
+      "all_negatives_code_breakdown": {
+        "count": 51313,
+        "same_raw_level_char": 9168,
+        "same_raw_level_char_pct": 17.87,
+        "same_equiv_level_1A_2B_3C": 15863,
+        "same_equiv_level_pct": 30.91,
+        "both_level_1_or_A": 3737,
+        "both_level_1_or_A_pct": 7.28,
+        "at_least_one_level_1_or_A": 24824,
+        "at_least_one_level_1_or_A_pct": 48.38,
+        "same_first_char_faculty": 4339,
+        "same_first_char_faculty_pct": 8.46
+      },
+      "group_5zeros_total": 40192,
+      "group_5zeros_positives": 185,
+      "group_5zeros_negatives": 40007,
+      "group_5zeros_share_of_all_positives_pct": 27.95,
+      "group_5zeros_positive_rate_pct": 0.46,
+      "group_5zeros_roc_auc_neg_min_hist": 0.5942,
+      "group_5zeros_pr_auc_neg_min_hist": 0.006,
+      "group_5zeros_roc_auc_neg_max_hist": 0.6369,
+      "group_5zeros_roc_auc_anio_confirmado": 0.3517,
+      "group_5zeros_pos_with_zero_hist_any": 44,
+      "group_5zeros_neg_with_zero_hist_any": 6550,
+      "group_5zeros_pos_both_zero_hist": 3,
+      "group_5zeros_pos_code_breakdown": {
+        "count": 185,
+        "same_raw_level_char": 18,
+        "same_raw_level_char_pct": 9.73,
+        "same_equiv_level_1A_2B_3C": 139,
+        "same_equiv_level_pct": 75.14,
+        "both_level_1_or_A": 132,
+        "both_level_1_or_A_pct": 71.35,
+        "at_least_one_level_1_or_A": 163,
+        "at_least_one_level_1_or_A_pct": 88.11,
+        "same_first_char_faculty": 26,
+        "same_first_char_faculty_pct": 14.05
+      },
+      "group_5zeros_neg_code_breakdown": {
+        "count": 40007,
+        "same_raw_level_char": 1299,
+        "same_raw_level_char_pct": 3.25,
+        "same_equiv_level_1A_2B_3C": 7571,
+        "same_equiv_level_pct": 18.92,
+        "both_level_1_or_A": 1620,
+        "both_level_1_or_A_pct": 4.05,
+        "at_least_one_level_1_or_A": 20810,
+        "at_least_one_level_1_or_A_pct": 52.02,
+        "same_first_char_faculty": 1959,
+        "same_first_char_faculty_pct": 4.9
+      }
+    },
+    "test": {
+      "split": "test",
+      "total_pairs": 65059,
+      "total_positives": 970,
+      "all_positives_with_at_least_one_subject_zero_hist": 127,
+      "all_positives_with_at_least_one_subject_zero_hist_pct": 13.09,
+      "all_positives_with_both_subjects_zero_hist": 13,
+      "all_positives_code_breakdown": {
+        "count": 970,
+        "same_raw_level_char": 538,
+        "same_raw_level_char_pct": 55.46,
+        "same_equiv_level_1A_2B_3C": 737,
+        "same_equiv_level_pct": 75.98,
+        "both_level_1_or_A": 640,
+        "both_level_1_or_A_pct": 65.98,
+        "at_least_one_level_1_or_A": 802,
+        "at_least_one_level_1_or_A_pct": 82.68,
+        "same_first_char_faculty": 312,
+        "same_first_char_faculty_pct": 32.16
+      },
+      "all_negatives_code_breakdown": {
+        "count": 64089,
+        "same_raw_level_char": 11392,
+        "same_raw_level_char_pct": 17.78,
+        "same_equiv_level_1A_2B_3C": 19886,
+        "same_equiv_level_pct": 31.03,
+        "both_level_1_or_A": 4484,
+        "both_level_1_or_A_pct": 7.0,
+        "at_least_one_level_1_or_A": 30622,
+        "at_least_one_level_1_or_A_pct": 47.78,
+        "same_first_char_faculty": 5733,
+        "same_first_char_faculty_pct": 8.95
+      },
+      "group_5zeros_total": 49244,
+      "group_5zeros_positives": 215,
+      "group_5zeros_negatives": 49029,
+      "group_5zeros_share_of_all_positives_pct": 22.16,
+      "group_5zeros_positive_rate_pct": 0.437,
+      "group_5zeros_roc_auc_neg_min_hist": 0.602,
+      "group_5zeros_pr_auc_neg_min_hist": 0.0057,
+      "group_5zeros_roc_auc_neg_max_hist": 0.642,
+      "group_5zeros_roc_auc_anio_confirmado": 0.3667,
+      "group_5zeros_pos_with_zero_hist_any": 37,
+      "group_5zeros_neg_with_zero_hist_any": 6509,
+      "group_5zeros_pos_both_zero_hist": 3,
+      "group_5zeros_pos_code_breakdown": {
+        "count": 215,
+        "same_raw_level_char": 16,
+        "same_raw_level_char_pct": 7.44,
+        "same_equiv_level_1A_2B_3C": 127,
+        "same_equiv_level_pct": 59.07,
+        "both_level_1_or_A": 119,
+        "both_level_1_or_A_pct": 55.35,
+        "at_least_one_level_1_or_A": 188,
+        "at_least_one_level_1_or_A_pct": 87.44,
+        "same_first_char_faculty": 27,
+        "same_first_char_faculty_pct": 12.56
+      },
+      "group_5zeros_neg_code_breakdown": {
+        "count": 49029,
+        "same_raw_level_char": 1533,
+        "same_raw_level_char_pct": 3.13,
+        "same_equiv_level_1A_2B_3C": 9335,
+        "same_equiv_level_pct": 19.04,
+        "both_level_1_or_A": 2048,
+        "both_level_1_or_A_pct": 4.18,
+        "at_least_one_level_1_or_A": 25247,
+        "at_least_one_level_1_or_A_pct": 51.49,
+        "same_first_char_faculty": 2517,
+        "same_first_char_faculty_pct": 5.13
+      }
+    }
+  }
+}

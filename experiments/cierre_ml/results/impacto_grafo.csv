@@ -1,0 +1,15 @@
+rol,representacion,modelo,criterio_umbral,split,threshold,precision,recall,f1,pr_auc,roc_auc,tp,fp,fn,tn,aristas_predichas,fp_por_tp,recall_ponderado_estudiantes,aristas_reales,estudiantes_afectados_reales,estudiantes_afectados_cubiertos,grado_medio_predicho_materias_heldout,grado_medio_real_materias_heldout,grado_max_predicho_materias_heldout,materias_heldout_aisladas_predichas,materias_heldout_aisladas_reales
+principal,F6,DecisionTree_d6_leaf50_Gini,umbral_F1_val,validation,0.23,0.4133,0.3097,0.3541,0.3211,0.9307,205,291,457,51022,496,1.42,0.7215,662,5102,3681,6.74,9.08,51.0,21.0,20.0
+principal,F6,DecisionTree_d6_leaf50_Gini,umbral_F1_val,test,0.23,0.4338,0.3041,0.3576,0.3074,0.9107,295,385,675,63704,680,1.305,0.6013,970,6173,3712,8.35,11.95,82.0,38.0,30.0
+principal,F6,DecisionTree_d6_leaf50_Gini,umbral_orientado_recall,validation,0.13,0.3233,0.3565,0.3391,0.3211,0.9307,236,494,426,50819,730,2.093,0.7485,662,5102,3819,9.96,9.08,59.0,12.0,20.0
+principal,F6,DecisionTree_d6_leaf50_Gini,umbral_orientado_recall,test,0.13,0.2425,0.4247,0.3087,0.3074,0.9107,412,1287,558,62802,1699,3.124,0.6658,970,6173,4110,20.91,11.95,159.0,21.0,30.0
+alternativa,F6,LogisticRegression_L2_C1,umbral_F1_val,validation,0.23,0.407,0.3142,0.3546,0.317,0.9287,208,303,454,51010,511,1.457,0.7252,662,5102,3700,6.97,9.08,54.0,28.0,20.0
+alternativa,F6,LogisticRegression_L2_C1,umbral_F1_val,test,0.23,0.4138,0.3268,0.3652,0.3128,0.9134,317,449,653,63640,766,1.416,0.625,970,6173,3858,9.34,11.95,86.0,28.0,30.0
+alternativa,F6,LogisticRegression_L2_C1,umbral_orientado_recall,validation,0.12,0.3394,0.3399,0.3396,0.317,0.9287,225,438,437,50875,663,1.947,0.7301,662,5102,3725,9.06,9.08,58.0,15.0,20.0
+alternativa,F6,LogisticRegression_L2_C1,umbral_orientado_recall,test,0.12,0.3568,0.3546,0.3557,0.3128,0.9134,344,620,626,63469,964,1.802,0.6349,970,6173,3919,11.78,11.95,94.0,17.0,30.0
+referencia_F0,F0,DecisionTree_d6_leaf50_Gini,umbral_F1_val,validation,0.2,0.3389,0.2145,0.2627,0.2148,0.8653,142,277,520,51036,419,1.951,0.5921,662,5102,3021,5.75,9.08,31.0,10.0,20.0
+referencia_F0,F0,DecisionTree_d6_leaf50_Gini,umbral_F1_val,test,0.2,0.3842,0.2052,0.2675,0.227,0.8777,199,319,771,63770,518,1.603,0.5508,970,6173,3400,6.33,11.95,44.0,19.0,30.0
+referencia_F0,F0,DecisionTree_d6_leaf50_Gini,umbral_orientado_recall,validation,0.11,0.2486,0.2644,0.2562,0.2148,0.8653,175,529,487,50784,704,3.023,0.6852,662,5102,3496,9.73,9.08,39.0,1.0,20.0
+referencia_F0,F0,DecisionTree_d6_leaf50_Gini,umbral_orientado_recall,test,0.11,0.2735,0.2701,0.2718,0.227,0.8777,262,696,708,63393,958,2.656,0.5923,970,6173,3656,11.66,11.95,52.0,2.0,30.0
+modelo_oficial_actual,F0,KNN_k15_Oficial,umbral_F1_val,validation,0.21,0.2761,0.2115,0.2395,0.1846,0.7651,140,367,522,50946,507,2.621,0.5337,662,5102,2723,,,,,
+modelo_oficial_actual,F0,KNN_k15_Oficial,umbral_F1_val,test,0.21,0.2711,0.2485,0.2593,0.1833,0.7665,241,648,729,63441,889,2.689,0.5845,970,6173,3608,,,,,
