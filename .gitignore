@@ -13,3 +13,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+
+# Modelos entrenados serializados (binarios pesados)
+*.joblib
+!results/models/.gitkeep

@@ -15,7 +15,8 @@ El trabajo se estructura en fases incrementales:
 - **Fase 1 (Completada):** Inspección, parsing estricto de los archivos originales y validación de integridad de las tablas intermedias (`data/interim/`).
 - **Fase 2 (Completada):** Construcción de los `319.600` pares posibles de materias, atributos académicos y variables basadas en la partición por cohortes (`1989–1993` como referencia histórica vs. `1994` como grupo objetivo), generando `data/processed/subject_pairs_poc.csv`.
 - **Fase 2.5 (Completada):** Preparación del dataset para Machine Learning mediante partición inductiva por materias (`train` / `test`), undersampling aleatorio 50/50 sobre entrenamiento para clasificación y filtrado de columnas con riesgo de *data leakage* (`ml_train_balanced.csv`, `ml_train_full.csv`, `ml_test_full.csv`).
-- **Fase 3 (Siguiente etapa):** Entrenamiento, validación y comparación de modelos de Machine Learning (Clasificación y Regresión) y generación de predicciones identificadas por par para construir el grafo de conflictos.
+- **Fase 3 (Completada — Clasificación):** Entrenamiento, validación interna por materias y comparación de modelos de clasificación (`DecisionTreeClassifier`, `LogisticRegression`, `KNeighborsClassifier` y baselines), selección de umbrales sobre validación, análisis de importancias y generación de predicciones identificadas por par en `results/` (`src/models/compare_models.py` y `docs/fase_3_entrenamiento_ml.md`).
+- **Fase 4 (Siguiente etapa):** Construcción del grafo no ponderado de incompatibilidades a partir de las probabilidades predichas y el umbral de decisión ($\hat{p}_{uv} \ge \tau$), e implementación del algoritmo de coloreo clásico (greedy) sobre la estructura de adyacencia para la asignación de turnos.
 
 > **Principios metodológicos rectores:**
 > 1. No inventar ni simular datos artificiales.
@@ -50,7 +51,8 @@ Tp-Grafos-ML/
 │   └── data
 ├── docs/
 │   ├── plan_poc_dataset_nottingham.md   # Este documento maestro estandarizado
-│   └── fase_2_5_preparacion_ml.md       # Documentación detallada de la Fase 2.5 y guía ML
+│   ├── fase_2_5_preparacion_ml.md       # Documentación detallada de la Fase 2.5 y guía ML
+│   └── fase_3_entrenamiento_ml.md       # Documentación y resultados de la Fase 3 (Clasificación)
 ├── data/
 │   ├── interim/
 │   │   ├── exams_clean.csv              # 800 exámenes limpios
@@ -61,12 +63,19 @@ Tp-Grafos-ML/
 │       ├── ml_train_balanced.csv        # Train balanceado 50/50: 6.996 pares (15 columnas)
 │       ├── ml_train_full.csv            # Train completo: 254.541 pares (15 columnas)
 │       └── ml_test_full.csv             # Test distribución real: 65.059 pares (15 columnas)
+├── results/
+│   ├── metrics/                         # CSVs y JSON de métricas de validación, test e importancias
+│   ├── models/                          # Modelos entrenados serializados (.joblib)
+│   └── predictions/                     # Predicciones y probabilidades sobre ml_test_full.csv
 ├── src/
 │   ├── parsing/
 │   │   └── parse_nott.py                # Script de Fase 1
-│   └── transformation/
-│       ├── build_subject_pairs.py       # Script de Fase 2
-│       └── prepare_ml_dataset.py        # Script de Fase 2.5
+│   ├── transformation/
+│   │   ├── build_subject_pairs.py       # Script de Fase 2
+│   │   └── prepare_ml_dataset.py        # Script de Fase 2.5
+│   └── models/
+│       └── compare_models.py            # Script de Fase 3 (Clasificación)
+├── requirements.txt
 └── README.md
 ```
 
@@ -174,5 +183,5 @@ El resultado deberá conservar la identificación de cada par de materias (`mate
 - [x] Se calculan tasas y proporciones (`tasa_compartidos_historico`, `jaccard_historico`, `tasa_afectados_actual`) para contemplar diferencias de tamaño entre cohortes (Fase 2).
 - [x] Se distingue explícitamente conflicto potencial de demanda vs. conflicto efectivo de horario (Fases 1 y 2).
 - [x] Se generan las particiones libres de *data leakage* para Machine Learning (`ml_train_balanced.csv`, `ml_train_full.csv`, `ml_test_full.csv`) conservando `materia_id_1` y `materia_id_2` para la reconstrucción del grafo (Fase 2.5).
-- [ ] Entrenamiento, validación y comparación de los modelos de Clasificación y Regresión (Fase 3).
-- [ ] Construcción del grafo ponderado de conflictos a partir de las predicciones y coloreo greedy de turnos (Fase 4).
+- [x] Entrenamiento, validación interna por materias y comparación de los modelos de Clasificación (`DecisionTree`, `LogisticRegression`, `KNN` y baselines), selección de umbrales en validación y exportación de métricas, modelos y predicciones en `results/` (Fase 3).
+- [ ] Construcción del grafo clásico no ponderado de incompatibilidades a partir de las probabilidades predichas ($\hat{p}_{uv} \ge \tau$) y coloreo greedy de turnos sobre la estructura de adyacencia (Fase 4).
