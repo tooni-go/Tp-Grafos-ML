@@ -68,14 +68,16 @@ from sklearn.tree import DecisionTreeClassifier
 RANDOM_SEED = 42
 VAL_SUBJECT_FRACTION = 0.10625  # ~77 materias de las 714 -> ~20,4% de pares en validación
 
-EXAMS_CLEAN_PATH = Path("data/interim/exams_clean.csv")
-TRAIN_BALANCED_PATH = Path("data/processed/ml_train_balanced.csv")
-TRAIN_FULL_PATH = Path("data/processed/ml_train_full.csv")
-TEST_FULL_PATH = Path("data/processed/ml_test_full.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-RESULTS_METRICS_DIR = Path("results/metrics")
-RESULTS_MODELS_DIR = Path("results/models")
-RESULTS_PREDICTIONS_DIR = Path("results/predictions")
+EXAMS_CLEAN_PATH = PROJECT_ROOT / "data" / "interim" / "exams_clean.csv"
+TRAIN_BALANCED_PATH = PROJECT_ROOT / "data" / "processed" / "ml_train_balanced.csv"
+TRAIN_FULL_PATH = PROJECT_ROOT / "data" / "processed" / "ml_train_full.csv"
+TEST_FULL_PATH = PROJECT_ROOT / "data" / "processed" / "ml_test_full.csv"
+
+RESULTS_METRICS_DIR = PROJECT_ROOT / "results" / "metrics"
+RESULTS_MODELS_DIR = PROJECT_ROOT / "results" / "models"
+RESULTS_PREDICTIONS_DIR = PROJECT_ROOT / "results" / "predictions"
 
 ID_COLUMNS: List[str] = ["materia_id_1", "materia_id_2"]
 TARGET_COLUMN: str = "hubo_conflicto_potencial"
@@ -106,7 +108,17 @@ BOOLEAN_FEATURE_COLUMNS: List[str] = [
 
 
 class HistoricalOverlapBaseline(BaseEstimator, ClassifierMixin):
-    """Baseline heurístico de dominio: predice conflicto si hubo alumnos compartidos en 1989-1993."""
+    """Baseline heurístico de dominio: predice conflicto si hubo alumnos compartidos en 1989-1993.
+
+    Nota metodológica sobre `predict_proba`:
+    Divide el conteo histórico por el máximo del conjunto evaluado para acotar el
+    score monótono en [0, 1]. Dado que PR-AUC y ROC-AUC son métricas basadas en
+    rangos (invariantes ante reescalados lineales positivos dentro de un mismo
+    conjunto), este score permite calcular ambas curvas sin distorsionar el orden
+    relativo de los pares, aunque NO representa una probabilidad calibrada y su
+    escala numérica depende del máximo del lote recibido. Por ello, `predict()`
+    evalúa directamente la regla determinística `vals > 0`.
+    """
 
     def __init__(self, feature_index: int = 8) -> None:
         self.feature_index = feature_index
@@ -121,7 +133,7 @@ class HistoricalOverlapBaseline(BaseEstimator, ClassifierMixin):
             if isinstance(X, pd.DataFrame)
             else np.asarray(X)[:, self.feature_index].astype(float)
         )
-        # Escala monótona acotada en [0, 1] para permitir cálculo de PR-AUC
+        # Escala monótona acotada en [0, 1] para permitir cálculo de PR-AUC y ROC-AUC
         scores = np.clip(vals / (vals.max() if vals.max() > 0 else 1.0), 0.0, 1.0)
         return np.column_stack([1.0 - scores, scores])
 
@@ -134,20 +146,79 @@ class HistoricalOverlapBaseline(BaseEstimator, ClassifierMixin):
         return (vals > 0).astype(int)
 
 
-def load_ml_dataframe(csv_path: Path) -> pd.DataFrame:
-    """Carga un CSV de la Fase 2.5 y verifica integridad y ausencia de nulos/infinitos."""
-    df = pd.read_csv(csv_path)
-    for bcol in BOOLEAN_FEATURE_COLUMNS:
-        df[bcol] = df[bcol].astype(bool).astype(int)
-    df[TARGET_COLUMN] = df[TARGET_COLUMN].astype(bool).astype(int)
+_STRICT_BINARY_MAP: Dict[Any, int] = {
+    True: 1,
+    False: 0,
+    1: 1,
+    0: 0,
+    1.0: 1,
+    0.0: 0,
+    "True": 1,
+    "False": 0,
+    "true": 1,
+    "false": 0,
+    "1": 1,
+    "0": 0,
+}
 
-    # Verificar que no existan valores nulos ni infinitos en features ni target
-    check_cols = FEATURE_COLUMNS + [TARGET_COLUMN]
-    null_count = int(df[check_cols].isna().sum().sum())
-    inf_count = int(np.isinf(df[check_cols].to_numpy(dtype=float)).sum())
-    if null_count > 0 or inf_count > 0:
+
+def _parse_strict_binary_column(
+    series: pd.Series, col_name: str, csv_path: Path
+) -> pd.Series:
+    """Convierte una columna booleana/binaria a int {0, 1} sin conversiones silenciosas."""
+    if series.isna().any():
         raise ValueError(
-            f"El archivo {csv_path} contiene {null_count} nulos y {inf_count} infinitos."
+            f"La columna '{col_name}' en {csv_path} contiene valores nulos."
+        )
+    if pd.api.types.is_bool_dtype(series):
+        return series.astype(int)
+    mapped = series.map(_STRICT_BINARY_MAP)
+    if mapped.isna().any():
+        invalid_vals = series[mapped.isna()].unique().tolist()[:5]
+        raise ValueError(
+            f"La columna '{col_name}' en {csv_path} contiene valores no binarios inesperados: {invalid_vals}"
+        )
+    return mapped.astype(int)
+
+
+def load_ml_dataframe(csv_path: Path) -> pd.DataFrame:
+    """Carga un CSV de la Fase 2.5 y valida columnas, tipos binarios y ausencia de nulos/infinitos."""
+    if not csv_path.exists():
+        raise FileNotFoundError(f"No se encontró el archivo requerido: {csv_path}")
+
+    df = pd.read_csv(csv_path)
+
+    required_cols = ID_COLUMNS + FEATURE_COLUMNS + [TARGET_COLUMN]
+    missing_cols = [c for c in required_cols if c not in df.columns]
+    if missing_cols:
+        raise ValueError(
+            f"Al archivo {csv_path} le faltan las columnas requeridas: {missing_cols}"
+        )
+
+    # Verificar ausencia de nulos antes de cualquier conversión de tipos
+    null_count = int(df[required_cols].isna().sum().sum())
+    if null_count > 0:
+        raise ValueError(f"El archivo {csv_path} contiene {null_count} valores nulos.")
+
+    for bcol in BOOLEAN_FEATURE_COLUMNS:
+        df[bcol] = _parse_strict_binary_column(df[bcol], bcol, csv_path)
+    df[TARGET_COLUMN] = _parse_strict_binary_column(
+        df[TARGET_COLUMN], TARGET_COLUMN, csv_path
+    )
+
+    # Verificar que las features numéricas sean numéricas y no existan infinitos
+    check_cols = FEATURE_COLUMNS + [TARGET_COLUMN]
+    try:
+        numeric_matrix = df[check_cols].to_numpy(dtype=float)
+    except (ValueError, TypeError) as exc:
+        raise ValueError(
+            f"El archivo {csv_path} contiene valores no numéricos en las features."
+        ) from exc
+
+    inf_count = int(np.isinf(numeric_matrix).sum())
+    if inf_count > 0:
+        raise ValueError(
+            f"El archivo {csv_path} contiene {inf_count} valores infinitos."
         )
     return df
 
@@ -276,7 +347,13 @@ def compute_classification_metrics(
 def find_best_f1_threshold_on_validation(
     y_val: np.ndarray, y_prob_val: np.ndarray
 ) -> float:
-    """Encuentra en validación el umbral de probabilidad que maximiza F1 (sin tocar Test)."""
+    """Encuentra en validación el umbral de probabilidad que maximiza F1 (sin tocar Test).
+
+    Recorre la grilla [0.01, 0.95] con paso 0.01 en orden ascendente. En caso de
+    empate exacto en F1 (por ejemplo, en modelos con probabilidades discretas como
+    KNN con K=15), la desigualdad estricta `score > best_f1` conserva el primer
+    umbral (el menor) del tramo óptimo.
+    """
     best_th = 0.50
     best_f1 = -1.0
     for th in np.linspace(0.01, 0.95, 95):
@@ -456,7 +533,8 @@ def run_phase3_comparison() -> Dict[str, Any]:
         try:
             directory.mkdir(parents=True, exist_ok=True)
         except OSError:
-            pass
+            if not directory.is_dir():
+                raise
 
     feature_importances_rows: List[Dict[str, Any]] = []
 

@@ -63,9 +63,11 @@ Tp-Grafos-ML/
 │       ├── ml_train_balanced.csv        # Train balanceado 50/50: 6.996 pares (15 columnas)
 │       ├── ml_train_full.csv            # Train completo: 254.541 pares (15 columnas)
 │       └── ml_test_full.csv             # Test distribución real: 65.059 pares (15 columnas)
+├── notebooks/
+│   └── Test_modelo_ML.ipynb             # Notebook de auditoría y reproducibilidad del modelo KNN
 ├── results/
 │   ├── metrics/                         # CSVs y JSON de métricas de validación, test e importancias
-│   ├── models/                          # Modelos entrenados serializados (.joblib)
+│   ├── models/                          # Modelos entrenados serializados (.joblib, ignorados en Git)
 │   └── predictions/                     # Predicciones y probabilidades sobre ml_test_full.csv
 ├── src/
 │   ├── parsing/
@@ -172,6 +174,12 @@ Para clasificación se priorizarán Precision, Recall, F1-score de la clase posi
 Para regresión se utilizarán MAE y RMSE, complementados con un análisis del comportamiento de las predicciones sobre valores cero y cantidades elevadas de estudiantes afectados.
 
 El resultado deberá conservar la identificación de cada par de materias (`materia_id_1`, `materia_id_2`) y generar las predicciones correspondientes, para su posterior utilización en la construcción del grafo de conflictos.
+
+### Síntesis de resultados de la Fase 3 (Clasificación)
+La implementación completa de los experimentos de clasificación se encuentra en [`src/models/compare_models.py`](file:///w:/home/anton/Tp-Grafos-ML/src/models/compare_models.py), auditada en [`notebooks/Test_modelo_ML.ipynb`](file:///w:/home/anton/Tp-Grafos-ML/notebooks/Test_modelo_ML.ipynb) y documentada en [`docs/fase_3_entrenamiento_ml.md`](file:///w:/home/anton/Tp-Grafos-ML/docs/fase_3_entrenamiento_ml.md):
+- Se utilizaron las **10 variables predictoras sin colinealidad** (`PREDICTOR_COLUMNS_NO_COLLINEAR`, excluyendo `tasa_compartidos_historico` y todas las columnas de ID/target).
+- Se aplicó validación interna por materias sobre `ml_train_full.csv` (`637` materias de subtrain / `77` de validación) para seleccionar sin tocar Test el umbral $\tau^*_{\text{val}}$ que maximiza F1 en cada modelo.
+- En la evaluación final sobre `ml_test_full.csv` (`65.059` pares), **`KNN_Full_Unweighted_UmbralVal`** ($\tau^*_{\text{val}} = 0,21$, equivalente a $\ge 4/15$ vecinos positivos) alcanzó el mayor F1-Score (`0,2593`, con `Precision = 0,2711`, `Recall = 0,2485`, `PR-AUC = 0,1833`, `TP = 241`, `FP = 648`, `FN = 729`, `TN = 63.441`), quedando seleccionado como modelo candidato principal para generar las aristas del grafo clásico no ponderado en la Fase 4.
 
 ---
 
