@@ -1,0 +1,19 @@
+model_name,train_regime,eval_split,threshold,tn,fp,fn,tp,precision,recall,f1_score,accuracy,pr_auc,roc_auc
+Baseline_Mayoritario,ml_train_full (254.541),ml_test_full,0.5,64089,0,970,0,0.0,0.0,0.0,0.98509,0.01491,0.5
+Baseline_Heuristico_Historico,ml_train_balanced (6.996),ml_test_full,0.5,62876,1213,768,202,0.142756,0.208247,0.169392,0.969551,0.075045,0.595234
+DecisionTree_Balanced,ml_train_balanced (6.996),ml_test_full,0.5,46786,17303,143,827,0.045615,0.852577,0.086597,0.731843,0.143941,0.868301
+DecisionTree_Balanced_UmbralVal,ml_train_balanced (6.996),ml_test_full,0.9,61951,2138,613,357,0.143086,0.368041,0.206061,0.957715,0.143941,0.868301
+LogisticRegression_Balanced,ml_train_balanced (6.996),ml_test_full,0.5,53246,10843,234,736,0.063563,0.758763,0.1173,0.829739,0.138449,0.867372
+LogisticRegression_Balanced_UmbralVal,ml_train_balanced (6.996),ml_test_full,0.94,63343,746,729,241,0.244174,0.248454,0.246295,0.977328,0.138449,0.867372
+KNN_Balanced,ml_train_balanced (6.996),ml_test_full,0.5,52213,11876,181,789,0.062298,0.813402,0.115732,0.814676,0.118273,0.865081
+KNN_Balanced_UmbralVal,ml_train_balanced (6.996),ml_test_full,0.94,63267,822,746,224,0.214149,0.230928,0.222222,0.975899,0.118273,0.865081
+DecisionTree_Full_Unweighted,ml_train_full (254.541),ml_test_full,0.5,64086,3,909,61,0.953125,0.062887,0.117988,0.985982,0.208157,0.854306
+DecisionTree_Full_Unweighted_UmbralVal,ml_train_full (254.541),ml_test_full,0.2,63898,191,820,150,0.439883,0.154639,0.228833,0.98446,0.208157,0.854306
+DecisionTree_Full_ClassWeight,ml_train_full (254.541),ml_test_full,0.5,47260,16829,136,834,0.047217,0.859794,0.089519,0.739237,0.176693,0.874667
+DecisionTree_Full_ClassWeight_UmbralVal,ml_train_full (254.541),ml_test_full,0.94,63869,220,826,144,0.395604,0.148454,0.215892,0.983922,0.176693,0.874667
+LogisticRegression_Full_Unweighted,ml_train_full (254.541),ml_test_full,0.5,64045,44,948,22,0.333333,0.02268,0.042471,0.984752,0.156648,0.863237
+LogisticRegression_Full_Unweighted_UmbralVal,ml_train_full (254.541),ml_test_full,0.19,63768,321,810,160,0.33264,0.164948,0.220538,0.982616,0.156648,0.863237
+LogisticRegression_Full_ClassWeight,ml_train_full (254.541),ml_test_full,0.5,53339,10750,233,737,0.064159,0.759794,0.118327,0.831184,0.151935,0.867655
+LogisticRegression_Full_ClassWeight_UmbralVal,ml_train_full (254.541),ml_test_full,0.94,63447,642,739,231,0.264605,0.238144,0.250678,0.978773,0.151935,0.867655
+KNN_Full_Unweighted,ml_train_full (254.541),ml_test_full,0.5,64019,70,881,89,0.559748,0.091753,0.157662,0.985382,0.183295,0.766514
+KNN_Full_Unweighted_UmbralVal,ml_train_full (254.541),ml_test_full,0.21,63441,648,729,241,0.271091,0.248454,0.259279,0.978835,0.183295,0.766514

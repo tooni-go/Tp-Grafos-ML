@@ -40,55 +40,36 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 
+from src.common.schema import (
+    COLLINEAR_EXCLUDED_COLUMN,
+    FEATURE_COLUMNS,
+    ID_COLUMNS,
+    PROJECT_ROOT,
+    TARGET_CLASSIFICATION,
+    TARGET_REGRESSION,
+)
+
+
 RANDOM_SEED = 42
 TEST_SUBJECT_FRACTION = 0.10625  # ~86 materias de 800 -> ~20,36% de los pares en test
 
-DEFAULT_INTERIM_EXAMS_CSV = Path("data/interim/exams_clean.csv")
-DEFAULT_POC_PAIRS_CSV = Path("data/processed/subject_pairs_poc.csv")
-DEFAULT_PROCESSED_DIR = Path("data/processed")
+DEFAULT_INTERIM_EXAMS_CSV = PROJECT_ROOT / "data" / "interim" / "exams_clean.csv"
+DEFAULT_POC_PAIRS_CSV = PROJECT_ROOT / "data" / "processed" / "subject_pairs_poc.csv"
+DEFAULT_PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 
 TRAIN_BALANCED_FILENAME = "ml_train_balanced.csv"
 TEST_FULL_FILENAME = "ml_test_full.csv"
 TRAIN_FULL_FILENAME = "ml_train_full.csv"
 
-# Columnas de identificación del par (solo para trazabilidad y armado del grafo; NO usar en X)
-ID_COLUMNS: List[str] = [
-    "materia_id_1",
-    "materia_id_2",
-]
+# Subconjunto sin colinealidad perfecta (10 features aprobadas en src/common/schema.py)
+PREDICTOR_COLUMNS_NO_COLLINEAR: List[str] = FEATURE_COLUMNS
 
-# 11 variables predictoras limpias por defecto (calculadas solo con catálogo y cohortes 1989-1993)
-PREDICTOR_COLUMNS: List[str] = [
-    "mismo_departamento",
-    "mismo_prefijo_curricular",
-    "anio_confirmado",
-    "mismo_anio",
-    "misma_carrera",
-    "cant_carreras_compartidas_hist",
-    "cant_inscriptos_hist_1",
-    "cant_inscriptos_hist_2",
-    "cant_estudiantes_compartidos_historico",
-    "tasa_compartidos_historico",
-    "jaccard_historico",
-]
-
-# Subconjunto sin colinealidad perfecta recomendado para Regresión Lineal/Logística y KNN
-PREDICTOR_COLUMNS_NO_COLLINEAR: List[str] = [
-    "mismo_departamento",
-    "mismo_prefijo_curricular",
-    "anio_confirmado",
-    "mismo_anio",
-    "misma_carrera",
-    "cant_carreras_compartidas_hist",
-    "cant_inscriptos_hist_1",
-    "cant_inscriptos_hist_2",
-    "cant_estudiantes_compartidos_historico",
-    "jaccard_historico",
-]
+# 11 variables predictoras limpias exportadas en los CSV de Fase 2.5 (incluye tasa_compartidos_historico)
+PREDICTOR_COLUMNS: List[str] = (
+    FEATURE_COLUMNS[:-1] + [COLLINEAR_EXCLUDED_COLUMN, FEATURE_COLUMNS[-1]]
+)
 
 # Variables objetivo (calculadas con cohorte 1994)
-TARGET_REGRESSION = "cant_estudiantes_afectados"
-TARGET_CLASSIFICATION = "hubo_conflicto_potencial"
 TARGET_COLUMNS: List[str] = [TARGET_REGRESSION, TARGET_CLASSIFICATION]
 
 # Columnas excluidas por ser texto descriptivo, alta cardinalidad redundante o tener nulos estructurales
