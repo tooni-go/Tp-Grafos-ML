@@ -65,46 +65,31 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
 
+from src.common.schema import (
+    BOOLEAN_FEATURE_COLUMNS,
+    COLLINEAR_EXCLUDED_COLUMN,
+    FEATURE_COLUMNS,
+    ID_COLUMNS,
+    PROJECT_ROOT,
+    RESULTS_METRICS_DIR,
+    RESULTS_MODELS_DIR,
+    RESULTS_PREDICTIONS_DIR,
+    TARGET_CLASSIFICATION,
+    TARGET_REGRESSION,
+    parse_strict_binary_column,
+)
+
+
 RANDOM_SEED = 42
 VAL_SUBJECT_FRACTION = 0.10625  # ~77 materias de las 714 -> ~20,4% de pares en validación
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 EXAMS_CLEAN_PATH = PROJECT_ROOT / "data" / "interim" / "exams_clean.csv"
 TRAIN_BALANCED_PATH = PROJECT_ROOT / "data" / "processed" / "ml_train_balanced.csv"
 TRAIN_FULL_PATH = PROJECT_ROOT / "data" / "processed" / "ml_train_full.csv"
 TEST_FULL_PATH = PROJECT_ROOT / "data" / "processed" / "ml_test_full.csv"
 
-RESULTS_METRICS_DIR = PROJECT_ROOT / "results" / "metrics"
-RESULTS_MODELS_DIR = PROJECT_ROOT / "results" / "models"
-RESULTS_PREDICTIONS_DIR = PROJECT_ROOT / "results" / "predictions"
-
-ID_COLUMNS: List[str] = ["materia_id_1", "materia_id_2"]
-TARGET_COLUMN: str = "hubo_conflicto_potencial"
-REGRESSION_TARGET_COLUMN: str = "cant_estudiantes_afectados"
-COLLINEAR_EXCLUDED_COLUMN: str = "tasa_compartidos_historico"
-
-# 10 variables predictoras aprobadas para la Fase 3
-FEATURE_COLUMNS: List[str] = [
-    "mismo_departamento",
-    "mismo_prefijo_curricular",
-    "anio_confirmado",
-    "mismo_anio",
-    "misma_carrera",
-    "cant_carreras_compartidas_hist",
-    "cant_inscriptos_hist_1",
-    "cant_inscriptos_hist_2",
-    "cant_estudiantes_compartidos_historico",
-    "jaccard_historico",
-]
-
-BOOLEAN_FEATURE_COLUMNS: List[str] = [
-    "mismo_departamento",
-    "mismo_prefijo_curricular",
-    "anio_confirmado",
-    "mismo_anio",
-    "misma_carrera",
-]
+TARGET_COLUMN: str = TARGET_CLASSIFICATION
+REGRESSION_TARGET_COLUMN: str = TARGET_REGRESSION
 
 
 class HistoricalOverlapBaseline(BaseEstimator, ClassifierMixin):
@@ -146,41 +131,6 @@ class HistoricalOverlapBaseline(BaseEstimator, ClassifierMixin):
         return (vals > 0).astype(int)
 
 
-_STRICT_BINARY_MAP: Dict[Any, int] = {
-    True: 1,
-    False: 0,
-    1: 1,
-    0: 0,
-    1.0: 1,
-    0.0: 0,
-    "True": 1,
-    "False": 0,
-    "true": 1,
-    "false": 0,
-    "1": 1,
-    "0": 0,
-}
-
-
-def _parse_strict_binary_column(
-    series: pd.Series, col_name: str, csv_path: Path
-) -> pd.Series:
-    """Convierte una columna booleana/binaria a int {0, 1} sin conversiones silenciosas."""
-    if series.isna().any():
-        raise ValueError(
-            f"La columna '{col_name}' en {csv_path} contiene valores nulos."
-        )
-    if pd.api.types.is_bool_dtype(series):
-        return series.astype(int)
-    mapped = series.map(_STRICT_BINARY_MAP)
-    if mapped.isna().any():
-        invalid_vals = series[mapped.isna()].unique().tolist()[:5]
-        raise ValueError(
-            f"La columna '{col_name}' en {csv_path} contiene valores no binarios inesperados: {invalid_vals}"
-        )
-    return mapped.astype(int)
-
-
 def load_ml_dataframe(csv_path: Path) -> pd.DataFrame:
     """Carga un CSV de la Fase 2.5 y valida columnas, tipos binarios y ausencia de nulos/infinitos."""
     if not csv_path.exists():
@@ -201,8 +151,8 @@ def load_ml_dataframe(csv_path: Path) -> pd.DataFrame:
         raise ValueError(f"El archivo {csv_path} contiene {null_count} valores nulos.")
 
     for bcol in BOOLEAN_FEATURE_COLUMNS:
-        df[bcol] = _parse_strict_binary_column(df[bcol], bcol, csv_path)
-    df[TARGET_COLUMN] = _parse_strict_binary_column(
+        df[bcol] = parse_strict_binary_column(df[bcol], bcol, csv_path)
+    df[TARGET_COLUMN] = parse_strict_binary_column(
         df[TARGET_COLUMN], TARGET_COLUMN, csv_path
     )
 
