@@ -298,32 +298,63 @@ Se extrajo el atributo `feature_importances_` del árbol de decisión entrenado 
 
 ---
 
-## 11. Persistencia, Inferencia y Especificación Técnica para Integración (`joblib`)
+## 11. Módulo de Inferencia, Persistencia y Especificación Técnica para Integración (`src/inference/`)
 
-El modelo candidato principal se encuentra serializado en `results/models/knn_full_unweighted.joblib` (y verificado de forma independiente en [`notebooks/Test_modelo_ML.ipynb`](file:///w:/home/anton/Tp-Grafos-ML/notebooks/Test_modelo_ML.ipynb)):
+Para que el módulo de construcción y coloreo del grafo pueda consumir el modelo entrenado sin acoplarse al código de experimentación, se implementó el paquete de inferencia independiente [`src/inference/predict_conflicts.py`](file:///w:/home/anton/Tp-Grafos-ML/src/inference/predict_conflicts.py) (re-exportado en [`src/inference/__init__.py`](file:///w:/home/anton/Tp-Grafos-ML/src/inference/__init__.py)).
 
-1. **Contenido del archivo `.joblib`:** Contiene un objeto `sklearn.pipeline.Pipeline` con dos pasos ya ajustados sobre las `254.541` filas de `ml_train_full.csv`:
-   * `('scaler', StandardScaler())`: conserva los vectores `mean_` y `scale_` de las 10 features.
+### 11.1. Artefactos y Fuente Única de Verdad (`src/common/schema.py`)
+1. **Modelo serializado (`results/models/knn_full_unweighted.joblib`):** Contiene el `sklearn.pipeline.Pipeline` ajustado sobre las `254.541` filas de `ml_train_full.csv`:
+   * `('scaler', StandardScaler())`: conserva `mean_` y `scale_` de las 10 features. **No se debe volver a escalar la entrada externamente.**
    * `('clf', KNeighborsClassifier(n_neighbors=15, n_jobs=-1, weights='uniform'))`: contiene el `KDTree` entrenado.
-2. **Orden estricto de las features y escalado interno:**
-   * El pipeline exige un `pandas.DataFrame` con las **10 columnas en el orden exacto de `model.feature_names_in_`**:
-     `['mismo_departamento', 'mismo_prefijo_curricular', 'anio_confirmado', 'mismo_anio', 'misma_carrera', 'cant_carreras_compartidas_hist', 'cant_inscriptos_hist_1', 'cant_inscriptos_hist_2', 'cant_estudiantes_compartidos_historico', 'jaccard_historico']`.
-   * Si las columnas se entregan desordenadas, `scikit-learn` arroja `ValueError`.
-   * **El escalado lo realiza internamente el pipeline** al invocar `predict_proba(X)`; no debe aplicarse ningún escalado manual externo.
-3. **Aplicación externa del umbral `0.21` (No usar `model.predict()`):**
-   * El archivo `.joblib` **no almacena el umbral `0.21`** (el cual está registrado en `results/metrics/metrics_summary.json`).
-   * El método `model.predict(X)` aplica siempre el corte estándar `0.50` (`KNN_Full_Unweighted`). Para obtener las clasificaciones de `KNN_Full_Unweighted_UmbralVal`, se debe invocar siempre:
-     ```python
-     probabilidades = model.predict_proba(X[list(model.feature_names_in_)])[:, 1]
-     predicciones = (probabilidades >= 0.21).astype(int)
-     ```
-   * *Nota sobre precisión numérica en `test_predictions_all_models.csv`:* En el CSV exportado, las probabilidades `prob_<Modelo>` se guardan redondeadas a 6 decimales (`np.round(..., 6)`), por lo que $\frac{1}{15} = 0,066666666667\dots$ figura como `0.066667` (diferencia máxima de redondeo de $3,33 \times 10^{-7}$), mientras que las clasificaciones binarias con $\tau = 0,21$ coinciden exactamente en el **100% de los 65.059 pares**.
+   * Este artefacto está explícitamente incluido en el repositorio mediante `!results/models/knn_full_unweighted.joblib` en [`.gitignore`](file:///w:/home/anton/Tp-Grafos-ML/.gitignore) (mientras los demás modelos experimentales permanecen ignorados), para que cualquier integrante pueda clonar la rama y ejecutar inferencia sin reentrenar.
+2. **Umbral de decisión (`0.21`):** Se lee dinámicamente desde [`results/metrics/metrics_summary.json`](file:///w:/home/anton/Tp-Grafos-ML/results/metrics/metrics_summary.json#L41) (`calibrated_thresholds_from_validation["KNN_Full_Unweighted"] = 0.21`) mediante `load_calibrated_threshold()`.
+3. **Esquema centralizado (`src/common/schema.py`):** Define en un único módulo compartido `PROJECT_ROOT`, `ID_COLUMNS`, `FEATURE_COLUMNS`, `BOOLEAN_FEATURE_COLUMNS`, `COUNT_FEATURE_COLUMNS`, `JACCARD_FEATURE_COLUMN` y `parse_strict_binary_column()`, desacoplando `src/inference/` de `src/models/compare_models.py` y garantizando el orden exacto de las 10 variables:
+   `['mismo_departamento', 'mismo_prefijo_curricular', 'anio_confirmado', 'mismo_anio', 'misma_carrera', 'cant_carreras_compartidas_hist', 'cant_inscriptos_hist_1', 'cant_inscriptos_hist_2', 'cant_estudiantes_compartidos_historico', 'jaccard_historico']`.
+
+### 11.2. Cómo importar y utilizar la función de inferencia desde otro módulo
+
+#### Dependencias necesarias (`requirements.txt`)
+Para ejecutar la inferencia solo se requieren las librerías científicas estándar ya incluidas en [`requirements.txt`](file:///w:/home/anton/Tp-Grafos-ML/requirements.txt):
+* `numpy>=1.26.0`, `pandas>=2.2.0`, `scikit-learn>=1.4.0`, `joblib>=1.3.0`.
+
+#### Preparación de los datos de entrada
+La función pública `predict_conflict_pairs(pairs_df, ...)` recibe un `pandas.DataFrame` que debe contener:
+* **Identificadores del par (`ID_COLUMNS`):** `materia_id_1`, `materia_id_2` (cadenas no vacías).
+* **Las 10 features predictoras (`FEATURE_COLUMNS`):** Pueden venir en cualquier orden de columnas (e incluso acompañadas de columnas extra como en `subject_pairs_poc.csv` o `ml_test_full.csv`); la función valida que no falte ninguna, que no existan nulos ni infinitos, convierte de forma segura las 5 variables booleanas a `{0, 1}` y **reordena automáticamente las 10 columnas** antes de invocar `model.predict_proba(X)[:, 1]`.
+
+#### Ejemplo completo de uso
+```python
+import pandas as pd
+from src.inference import load_conflict_model, predict_conflict_pairs
+
+# 1. Cargar los pares de materias (por ejemplo, desde data/processed/ml_test_full.csv)
+pares_df = pd.read_csv("data/processed/ml_test_full.csv")
+
+# 2. (Opcional) Pre-cargar el modelo en memoria si se van a realizar múltiples consultas
+modelo_knn = load_conflict_model()
+
+# 3. Ejecutar la predicción (usa predict_proba[:, 1] y aplica el umbral 0.21 de validación)
+resultado_df = predict_conflict_pairs(pares_df, model=modelo_knn)
+
+# 4. Interpretar la salida y filtrar las aristas de incompatibilidad (pred_conflicto == 1)
+aristas_conflicto = resultado_df[resultado_df["pred_conflicto"] == 1][
+    ["materia_id_1", "materia_id_2", "prob_conflicto"]
+]
+print(f"Total de pares evaluados: {len(resultado_df)}")
+print(f"Aristas de conflicto predichas (tau=0.21): {len(aristas_conflicto)}")
+```
+
+#### Interpretación de las columnas de salida
+`predict_conflict_pairs()` devuelve un `pandas.DataFrame` con la misma cantidad de filas que la entrada y las columnas:
+* `materia_id_1`, `materia_id_2` (`str`): identificadores de las dos materias que conforman el par $(u, v)$.
+* `prob_conflicto` (`float` en $[0, 1]$): probabilidad estimada de conflicto potencial obtenida mediante `model.predict_proba(X)[:, 1]` (múltiplo discreto de $1/15$).
+* `pred_conflicto` (`int` en $\{0, 1\}$): clasificación binaria tras aplicar el umbral (`1` si `prob_conflicto >= 0.21`, lo que indica **agregar la arista de incompatibilidad $\{u, v\}$ al grafo**; `0` si `prob_conflicto < 0.21`, sin arista).
 
 ---
 
-## 12. Cómo Ejecutar el Código, Reproducibilidad y Artefactos Generados
+## 12. Cómo Ejecutar el Código, las Pruebas Automatizadas y Artefactos Generados
 
-La arquitectura de la Fase 3 separa estrictamente la **implementación reproducible** (mediante los scripts de `src/`, que constituyen la única fuente de verdad para generar datasets, modelos, métricas y predicciones con `RANDOM_SEED = 42`) de la **herramienta de inspección y auditoría interactiva** ([`notebooks/Test_modelo_ML.ipynb`](file:///w:/home/anton/Tp-Grafos-ML/notebooks/Test_modelo_ML.ipynb), que consume los artefactos ya generados en modo de solo lectura sin reentrenar ni sobrescribir resultados).
+La arquitectura de la Fase 3 separa estrictamente la **implementación reproducible** (mediante los scripts de `src/`, que constituyen la única fuente de verdad para generar datasets, modelos, métricas, predicciones e inferencia) de la **herramienta de inspección y auditoría interactiva** ([`notebooks/Test_modelo_ML.ipynb`](file:///w:/home/anton/Tp-Grafos-ML/notebooks/Test_modelo_ML.ipynb), que consume los artefactos ya generados en modo de solo lectura sin reentrenar ni sobrescribir resultados). Todas las rutas están ancladas a `PROJECT_ROOT`, por lo que funcionan independientemente del directorio desde el que se ejecute el programa.
 
 Desde la raíz del proyecto en WSL / terminal:
 
@@ -332,7 +363,10 @@ Desde la raíz del proyecto en WSL / terminal:
 python3 -m venv venv
 ./venv/bin/pip install -r requirements.txt
 
-# 2. Ejecutar el pipeline de entrenamiento, validación y evaluación de Fase 3
+# 2. Ejecutar la suite de pruebas automatizadas del módulo de inferencia
+./venv/bin/python -m unittest discover -s tests -v
+
+# 3. (Opcional) Re-ejecutar el pipeline completo de entrenamiento y evaluación de Fase 3
 ./venv/bin/python -m src.models.compare_models
 ```
 
@@ -341,7 +375,7 @@ python3 -m venv venv
 * [`results/metrics/test_metrics.csv`](file:///w:/home/anton/Tp-Grafos-ML/results/metrics/test_metrics.csv): métricas finales sobre los 65.059 pares de `ml_test_full.csv` (18 filas: 2 baselines y los 8 modelos entrenables evaluados en $\tau = 0,50$ y en $\tau^*_{\text{val}}$).
 * [`results/metrics/decision_tree_feature_importances.csv`](file:///w:/home/anton/Tp-Grafos-ML/results/metrics/decision_tree_feature_importances.csv): importancia de variables ordenada para cada árbol de decisión.
 * [`results/metrics/metrics_summary.json`](file:///w:/home/anton/Tp-Grafos-ML/results/metrics/metrics_summary.json): resumen consolidado en formato JSON (incluye los 8 umbrales seleccionados en validación, conteos de validación y matrices de confusión).
-* `results/models/*.joblib`: los 10 modelos entrenados serializados con `joblib` (ignorados en Git mediante `.gitignore`, conservados localmente).
+* `results/models/*.joblib`: los 10 modelos entrenados serializados con `joblib` (el modelo candidato `knn_full_unweighted.joblib` queda incluido y versionado en Git; los 9 modelos experimentales restantes permanecen ignorados en `.gitignore`).
 * [`results/predictions/test_predictions_all_models.csv`](file:///w:/home/anton/Tp-Grafos-ML/results/predictions/test_predictions_all_models.csv): tabla de 65.059 filas que conserva `materia_id_1`, `materia_id_2`, `hubo_conflicto_potencial`, las probabilidades `prob_<Modelo>` y las predicciones binarias `pred_<Modelo>_th050` y `pred_<Modelo>_thVal`.
 
 ---

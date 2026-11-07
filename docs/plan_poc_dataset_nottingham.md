@@ -67,16 +67,25 @@ Tp-Grafos-ML/
 │   └── Test_modelo_ML.ipynb             # Notebook de auditoría y reproducibilidad del modelo KNN
 ├── results/
 │   ├── metrics/                         # CSVs y JSON de métricas de validación, test e importancias
-│   ├── models/                          # Modelos entrenados serializados (.joblib, ignorados en Git)
+│   ├── models/                          # Modelo candidato knn_full_unweighted.joblib (versionado en Git)
 │   └── predictions/                     # Predicciones y probabilidades sobre ml_test_full.csv
 ├── src/
+│   ├── common/
+│   │   ├── __init__.py
+│   │   └── schema.py                    # Esquema centralizado (FEATURE_COLUMNS, ID_COLUMNS, validadores)
 │   ├── parsing/
 │   │   └── parse_nott.py                # Script de Fase 1
 │   ├── transformation/
 │   │   ├── build_subject_pairs.py       # Script de Fase 2
 │   │   └── prepare_ml_dataset.py        # Script de Fase 2.5
-│   └── models/
-│       └── compare_models.py            # Script de Fase 3 (Clasificación)
+│   ├── models/
+│   │   └── compare_models.py            # Script de Fase 3 (Clasificación)
+│   └── inference/
+│       ├── __init__.py
+│       └── predict_conflicts.py         # Módulo público de inferencia ML para el grafo
+├── tests/
+│   ├── __init__.py
+│   └── test_inference.py                # Pruebas automatizadas del módulo de inferencia
 ├── requirements.txt
 └── README.md
 ```
