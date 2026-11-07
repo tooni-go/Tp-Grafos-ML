@@ -18,8 +18,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 
-DEFAULT_RAW_DIR = Path("Nottingham Dataset")
-DEFAULT_INTERIM_DIR = Path("data/interim")
+from src.common.schema import PROJECT_ROOT
+
+
+DEFAULT_RAW_DIR = PROJECT_ROOT / "Nottingham Dataset"
+DEFAULT_INTERIM_DIR = PROJECT_ROOT / "data" / "interim"
 
 VALID_NUMERIC_YEAR_CODES = {"1", "2", "3", "4"}
 HISTORICAL_COHORT_YEARS = {1989, 1990, 1991, 1992, 1993}

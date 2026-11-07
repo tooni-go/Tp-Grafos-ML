@@ -1,0 +1,7 @@
+codigo,grupo_departamentos,n_examenes,acuerdo_cohorte_esperada
+A,deptos_mixtos,57,0.8246
+A,deptos_solo_letras,6,1.0
+B,deptos_mixtos,100,0.6
+B,deptos_solo_letras,7,1.0
+C,deptos_mixtos,65,0.8615
+C,deptos_solo_letras,8,0.875

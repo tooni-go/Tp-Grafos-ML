@@ -1,0 +1,35 @@
+"""Definiciones de esquema, rutas base y validadores compartidos del módulo ML."""
+
+from src.common.schema import (
+    BOOLEAN_FEATURE_COLUMNS,
+    COLLINEAR_EXCLUDED_COLUMN,
+    COUNT_FEATURE_COLUMNS,
+    FEATURE_COLUMNS,
+    ID_COLUMNS,
+    JACCARD_FEATURE_COLUMN,
+    PROJECT_ROOT,
+    RESULTS_METRICS_DIR,
+    RESULTS_MODELS_DIR,
+    RESULTS_PREDICTIONS_DIR,
+    STRICT_BINARY_MAP,
+    TARGET_CLASSIFICATION,
+    TARGET_REGRESSION,
+    parse_strict_binary_column,
+)
+
+__all__ = [
+    "BOOLEAN_FEATURE_COLUMNS",
+    "COLLINEAR_EXCLUDED_COLUMN",
+    "COUNT_FEATURE_COLUMNS",
+    "FEATURE_COLUMNS",
+    "ID_COLUMNS",
+    "JACCARD_FEATURE_COLUMN",
+    "PROJECT_ROOT",
+    "RESULTS_METRICS_DIR",
+    "RESULTS_MODELS_DIR",
+    "RESULTS_PREDICTIONS_DIR",
+    "STRICT_BINARY_MAP",
+    "TARGET_CLASSIFICATION",
+    "TARGET_REGRESSION",
+    "parse_strict_binary_column",
+]

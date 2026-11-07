@@ -32,8 +32,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 
-DEFAULT_INTERIM_DIR = Path("data/interim")
-DEFAULT_PROCESSED_DIR = Path("data/processed")
+from src.common.schema import PROJECT_ROOT
+
+
+DEFAULT_INTERIM_DIR = PROJECT_ROOT / "data" / "interim"
+DEFAULT_PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 DEFAULT_OUTPUT_FILENAME = "subject_pairs_poc.csv"
 
 HISTORICAL_GROUP = "historico_1989_1993"

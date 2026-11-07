@@ -13,3 +13,8 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+
+# Modelos entrenados serializados (se versiona únicamente el modelo candidato final)
+*.joblib
+!results/models/knn_full_unweighted.joblib
+!results/models/.gitkeep
