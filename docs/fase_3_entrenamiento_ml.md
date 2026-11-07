@@ -196,12 +196,12 @@ Se implementaron dos líneas base de referencia:
 | `KNN_Full_Unweighted` | 0,50 | 0,5597 | 0,0918 | 0,1577 | 0,1833 | 0,9854 | 89 | 70 | 881 | 64.019 |
 | **`KNN_Full_Unweighted_UmbralVal`** | **0,21** | **0,2711** | **0,2485** | **0,2593** | 0,1833 | 0,9788 | 241 | 648 | 729 | 63.441 |
 
-### 7.3. Evaluación detallada del modelo candidato principal (`KNN_Full_Unweighted_UmbralVal`) y por qué *Accuracy* no es suficiente
-El modelo con mejor desempeño equilibrado en evaluación final (`ml_test_full.csv`, `65.059` pares) es **`KNN_Full_Unweighted_UmbralVal`**:
+### 7.3. Evaluación detallada del modelo candidato de integración (`KNN_Full_Unweighted_UmbralVal`) y por qué *Accuracy* no es suficiente
+El modelo adoptado como candidato principal de integración es **`KNN_Full_Unweighted_UmbralVal`**, el cual obtuvo el **mejor F1-Score observado en evaluación final (`ml_test_full.csv`, `65.059` pares: `F1 = 0,2593`)**, habiendo ocupado el **segundo puesto en validación interna (`F1_val = 0,2395`, detrás de `DecisionTree_Full_Unweighted_UmbralVal` con `F1_val = 0,2615`)**:
 * **Umbral seleccionado en validación ($\tau^*_{\text{val}}$):** `0.21` (equivalente a $\ge 4$ vecinos conflictivos de $K=15$).
 * **Precision:** `0.271091` (~**`0,2711`**).
 * **Recall (Sensibilidad):** `0.248454` (~**`0,2485`**).
-* **F1-Score (clase positiva):** `0.259279` (~**`0,2593`**, el más alto de todos los modelos evaluados en Test).
+* **F1-Score (clase positiva):** `0.259279` (~**`0,2593`**, el más alto observado en Test; segundo en Validación con `0,239521`).
 * **PR-AUC (`average_precision_score`):** `0.183295` (~**`0,1833`**, más del doble del baseline histórico `0,0750` y `12,3` veces el azar `0,0149`).
 * **ROC-AUC:** `0.766514` (~`0,7665`).
 * **Matriz de confusión en Test (`65.059` pares):**
@@ -290,10 +290,11 @@ Se extrajo el atributo `feature_importances_` del árbol de decisión entrenado 
 
 ## 10. Limitaciones Metodológicas y Alcance de las Métricas
 
-1. **El F1-score mide clasificación de pares, NO calidad del cronograma de exámenes:** Un F1 de `0,2593` (o cualquier métrica de esta fase) evalúa exclusivamente la capacidad de predecir aristas individuales $(u, v)$ en `ml_test_full.csv`. **No mide la calidad final de la grilla de exámenes** (cantidad de turnos/colores requeridos por el algoritmo de coloreo ni cantidad de choques efectivos en el calendario), dado que incluso si un par conflictivo no es predicho como arista (`FN`), dos materias no adyacentes pueden recibir colores distintos durante el coloreo si sus respectivos vecindarios así lo fuerzan.
-2. **Desfase generacional entre cohortes (`1989–1993` vs. `1994`):** Al tratarse de cohortes de ingreso dentro de un único semestre (`1994–95, Semestre 1`), las materias exclusivas de 1.er año tienen baja inscripción en las cohortes `1989–1993` (solo recursantes), lo que limita el alcance de `cant_estudiantes_compartidos_historico` y obliga a los modelos a apoyarse en atributos estructurales (`misma_carrera`, `mismo_anio`), acotando el techo de PR-AUC alcanzable (~`0,21`).
-3. **Sensibilidad al umbral bajo prevalencia del 1,49%:** Tanto el *undersampling* 50/50 como `class_weight="balanced"` alteran la distribución o ponderación empleada en el entrenamiento y desplazan los puntajes predichos respecto a la prevalencia natural del test (1,49%), mientras que los modelos no ponderados concentran sus probabilidades en valores bajos. Por ello resulta indispensable seleccionar el umbral de decisión $\tau$ sobre un conjunto de validación con prevalencia natural según el compromiso deseado entre Falsos Positivos y Falsos Negativos.
-4. **Dependencia residual en pares semi-inductivos:** En la partición por materias, los pares de validación y test donde una materia pertenece al conjunto reservado y la otra fue vista en entrenamiento son semi-inductivos ($714 \times 86 = 61.404$ pares en test), mientras que los pares donde ambas materias pertenecen al conjunto reservado ($\binom{86}{2} = 3.655$ pares en test) son puramente inductivos.
+1. **Selección *post-hoc* del modelo candidato de integración frente a validación:** Si bien los umbrales de decisión ($\tau^*_{\text{val}}$) se seleccionaron estrictamente en validación interna sin utilizar `ml_test_full.csv`, la elección de `KNN_Full_Unweighted_UmbralVal` como modelo candidato de integración por encima de `DecisionTree_Full_Unweighted_UmbralVal` fue una decisión *post-hoc* al observar que obtuvo el mejor F1 en Test (`0,2593` vs. `0,2288`, con mayor estabilidad de Recall: `0,2115` en validación y `0,2485` en test), pese a haber quedado en **segundo lugar en validación interna** (`F1_val = 0,2395` frente a `0,2615` del árbol). En consecuencia, el F1 de test del modelo elegido no está libre de sesgo de selección entre las variantes comparadas.
+2. **El F1-score mide clasificación de pares, NO calidad del cronograma de exámenes:** Un F1 de `0,2593` (o cualquier métrica de esta fase) evalúa exclusivamente la capacidad de predecir aristas individuales $(u, v)$ en `ml_test_full.csv`. **No mide la calidad final de la grilla de exámenes** (cantidad de turnos/colores requeridos por el algoritmo de coloreo ni cantidad de choques efectivos en el calendario), dado que incluso si un par conflictivo no es predicho como arista (`FN`), dos materias no adyacentes pueden recibir colores distintos durante el coloreo si sus respectivos vecindarios así lo fuerzan.
+3. **Desfase generacional entre cohortes (`1989–1993` vs. `1994`):** Al tratarse de cohortes de ingreso dentro de un único semestre (`1994–95, Semestre 1`), las materias exclusivas de 1.er año tienen baja inscripción en las cohortes `1989–1993` (solo recursantes), lo que limita la cobertura directa de `cant_estudiantes_compartidos_historico` y hace que los modelos dependan en gran medida de los atributos estructurales (`misma_carrera`, `mismo_anio`). Si bien en los modelos evaluados se observaron valores de PR-AUC de hasta `0,2082`, los resultados por sí solos no demuestran que dicho valor constituya un límite teórico máximo del problema, ya que cuantificar el impacto causal del desfase requeriría un análisis específico adicional.
+4. **Sensibilidad al umbral bajo prevalencia del 1,49%:** Tanto el *undersampling* 50/50 como `class_weight="balanced"` alteran la distribución o ponderación empleada en el entrenamiento y desplazan los puntajes predichos respecto a la prevalencia natural del test (1,49%), mientras que los modelos no ponderados concentran sus probabilidades en valores bajos. Por ello resulta indispensable seleccionar el umbral de decisión $\tau$ sobre un conjunto de validación con prevalencia natural según el compromiso deseado entre Falsos Positivos y Falsos Negativos.
+5. **Dependencia residual en pares semi-inductivos:** En la partición por materias, los pares de validación y test donde una materia pertenece al conjunto reservado y la otra fue vista en entrenamiento son semi-inductivos ($714 \times 86 = 61.404$ pares en test), mientras que los pares donde ambas materias pertenecen al conjunto reservado ($\binom{86}{2} = 3.655$ pares en test) son puramente inductivos.
 
 ---
 
@@ -320,7 +321,9 @@ El modelo candidato principal se encuentra serializado en `results/models/knn_fu
 
 ---
 
-## 12. Cómo Ejecutar el Código y Artefactos Generados
+## 12. Cómo Ejecutar el Código, Reproducibilidad y Artefactos Generados
+
+La arquitectura de la Fase 3 separa estrictamente la **implementación reproducible** (mediante los scripts de `src/`, que constituyen la única fuente de verdad para generar datasets, modelos, métricas y predicciones con `RANDOM_SEED = 42`) de la **herramienta de inspección y auditoría interactiva** ([`notebooks/Test_modelo_ML.ipynb`](file:///w:/home/anton/Tp-Grafos-ML/notebooks/Test_modelo_ML.ipynb), que consume los artefactos ya generados en modo de solo lectura sin reentrenar ni sobrescribir resultados).
 
 Desde la raíz del proyecto en WSL / terminal:
 
