@@ -1,0 +1,366 @@
+{
+  "split": {
+    "total_train_subjects": 714,
+    "subtrain_subjects_count": 637,
+    "val_subjects_count": 77,
+    "subtrain_full_rows": 202566,
+    "subtrain_full_positives": 2836,
+    "subtrain_full_negatives": 199730,
+    "subtrain_full_prevalence": 0.014,
+    "subtrain_balanced_rows": 5672,
+    "subtrain_balanced_positives": 2836,
+    "subtrain_balanced_negatives": 2836,
+    "subtrain_balanced_prevalence": 0.5,
+    "validation_rows": 51975,
+    "validation_positives": 662,
+    "validation_negatives": 51313,
+    "validation_prevalence": 0.012737
+  },
+  "materias": {
+    "subtrain": 637,
+    "validation": 77,
+    "train": 714,
+    "test": 86
+  },
+  "niveles": {
+    "decisiones_letras": {
+      "A": {
+        "cohorte_dominante_coincide": true,
+        "acuerdo_subtrain_ok": true
+      },
+      "B": {
+        "cohorte_dominante_coincide": true,
+        "acuerdo_subtrain_ok": true
+      },
+      "C": {
+        "cohorte_dominante_coincide": true,
+        "acuerdo_subtrain_ok": true
+      }
+    },
+    "letras_aceptadas": {
+      "A": 1,
+      "B": 2,
+      "C": 3
+    },
+    "departamentos_con_numericos_y_letras": 25,
+    "total_departamentos": 46,
+    "codigos_especiales_0_P_4": [
+      {
+        "exam_id": "C1P001E1",
+        "exam_name": "TISSUE CULT:SEX & SOMATIC GENE FOR PL IM",
+        "department_code": "LE",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "C8P001E1",
+        "exam_name": "MSC OCC PSYH/ORGANISIG HEALTH TRAINING",
+        "department_code": "PS",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "C8P002E1",
+        "exam_name": "MSC OCC PSYCH/ORGAN HEATH SELEC & ASSESS",
+        "department_code": "PS",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "EN00C1E1",
+        "exam_name": "CHEMISTRY A",
+        "department_code": "MT",
+        "raw_level_char": "0",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "EN00P1E1",
+        "exam_name": "LIGHT,WAVES AND ELECTRONS A",
+        "department_code": "MT",
+        "raw_level_char": "0",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "EN00P3E1",
+        "exam_name": "THERMAL SCIENCE A",
+        "department_code": "ME",
+        "raw_level_char": "0",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "EN00P5E1",
+        "exam_name": "BASIC ENGINEERING MECHANICS A",
+        "department_code": "MT",
+        "raw_level_char": "0",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "EN00P7E1",
+        "exam_name": "ELECTRICITY AND MAGNETISM A",
+        "department_code": "EE",
+        "raw_level_char": "0",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "G5P002E1",
+        "exam_name": "INTRO. TO EXPERT SYSTEMS",
+        "department_code": "CX",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "G5P005E1",
+        "exam_name": "INDUSTRIAL INFORMATION SYSTEMS",
+        "department_code": "CX",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "H24C20E1",
+        "exam_name": "CIVIL ENGINEERING STUDIES 2",
+        "department_code": "CV",
+        "raw_level_char": "4",
+        "cohorte_dominante": 1991
+      },
+      {
+        "exam_id": "H6P001E1",
+        "exam_name": "INTRODUCTORY ELECTRONICS",
+        "department_code": "EE",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "H6P002E1",
+        "exam_name": "MICROPROCESSORS & MICROCOMPUTERS",
+        "department_code": "EE",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "K4P100E1",
+        "exam_name": "INTRODUCTION TO ECONOMICS (FOR PLANNERS)",
+        "department_code": "AR",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      },
+      {
+        "exam_id": "K4P300E1",
+        "exam_name": "PLANNING PRACTICE & MANAGEMENT I",
+        "department_code": "AR",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1993
+      },
+      {
+        "exam_id": "LK44FAE1",
+        "exam_name": "INTER FACULTY FRENCH 4A",
+        "department_code": "A*",
+        "raw_level_char": "4",
+        "cohorte_dominante": 1991
+      },
+      {
+        "exam_id": "LK44GAE1",
+        "exam_name": "INTER FACULTY GERMAN 4A",
+        "department_code": "A*",
+        "raw_level_char": "4",
+        "cohorte_dominante": 1991
+      },
+      {
+        "exam_id": "LK44SAE1",
+        "exam_name": "INTER FACULTY SPANISH 4A",
+        "department_code": "A*",
+        "raw_level_char": "4",
+        "cohorte_dominante": 1991
+      },
+      {
+        "exam_id": "Q8P010E1",
+        "exam_name": "ETHNICITY IN GREEK DRAMA",
+        "department_code": "CL",
+        "raw_level_char": "P",
+        "cohorte_dominante": 1994
+      }
+    ],
+    "mapa_final_usado": {
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "A": 1,
+      "B": 2,
+      "C": 3
+    }
+  },
+  "pares_afectados": {
+    "pares_totales": 319600,
+    "anio_confirmado_original_1": 146611,
+    "anio_confirmado_corregido_1": 307720,
+    "pares_que_pasan_a_confirmado": 161109,
+    "mismo_anio_original_1": 48828,
+    "mismo_anio_corregido_1": 102232,
+    "pares_que_pasan_a_mismo_anio": 53404,
+    "pares_mismo_anio_que_se_pierden": 0,
+    "pares_ambas_primer_anio": 25425,
+    "examenes_con_nivel_original": 542,
+    "examenes_con_nivel_corregido": 785,
+    "subtrain_val_positivos": 3498,
+    "subtrain_val_pares_ganan_mismo_anio": 42626,
+    "subtrain_val_positivos_ganan_mismo_anio": 1281,
+    "subtrain_val_tasa_positiva_en_ganados": 0.0301,
+    "subtrain_val_tasa_positiva_mismo_anio_original": 0.0416,
+    "subtrain_val_tasa_positiva_ambas_primer_anio": 0.1246,
+    "subtrain_val_tasa_positiva_global": 0.0137
+  },
+  "verificacion_afirmaciones_previas": {
+    "val_pares_5_ceros": 40192,
+    "val_positivos_5_ceros": 185,
+    "val_positivos_totales": 662,
+    "pct_positivos_en_5_ceros": 27.95,
+    "pos5_ambas_primer_anio_mapa_corregido": 132,
+    "neg5_ambas_primer_anio_mapa_corregido": 1620,
+    "pos5_ambas_primer_anio_mapa_anterior_0P_como_1": 134,
+    "neg5_ambas_primer_anio_mapa_anterior_0P_como_1": 2246,
+    "pct_pos5_con_vecinos_comunes_2saltos": 25.41,
+    "pct_neg5_con_vecinos_comunes_2saltos": 14.12
+  },
+  "leakage_checks": {
+    "inscripciones_historicas_usadas_en_grafo": 19798,
+    "inscripciones_1994_en_grafo": 0,
+    "grafo_identico_sin_inscripciones_1994": true,
+    "grafo_identico_con_1994_permutado": true,
+    "arista_1salto_equivale_a_compartidos_hist_oficial": true,
+    "simetria_por_representacion": {
+      "F0": false,
+      "F4": true,
+      "F5": true,
+      "F6_sin_primer_anio": true,
+      "F6": true,
+      "F7": true
+    },
+    "F7_intermediarios_solo_subtrain_val_pr_auc": {
+      "DecisionTree": 0.3261,
+      "LogisticRegression": 0.3195
+    }
+  },
+  "seleccion": {
+    "pr_auc_medio_val_por_representacion": {
+      "F0": 0.1896,
+      "F4": 0.1814,
+      "F5": 0.1903,
+      "F6": 0.3109,
+      "F6_sin_primer_anio": 0.2135,
+      "F7": 0.3197
+    },
+    "f1_medio_val_por_representacion": {
+      "F0": 0.2529,
+      "F4": 0.2397,
+      "F5": 0.253,
+      "F6": 0.3462,
+      "F6_sin_primer_anio": 0.2926,
+      "F7": 0.359
+    },
+    "representaciones_validas": [
+      "F0",
+      "F4",
+      "F6_sin_primer_anio",
+      "F6",
+      "F7",
+      "F5"
+    ],
+    "representacion_elegida": "F6",
+    "principal": {
+      "modelo": "DecisionTree_d6_leaf50_Gini",
+      "umbral": 0.23
+    },
+    "alternativa": {
+      "modelo": "LogisticRegression_L2_C1",
+      "umbral": 0.23
+    }
+  },
+  "umbral_orientado_recall": {
+    "principal": 0.13,
+    "alternativa": 0.12,
+    "referencia_F0": 0.11
+  },
+  "rep_columns": {
+    "F0": [
+      "mismo_departamento",
+      "mismo_prefijo_curricular",
+      "anio_confirmado",
+      "mismo_anio",
+      "misma_carrera",
+      "cant_carreras_compartidas_hist",
+      "cant_inscriptos_hist_1",
+      "cant_inscriptos_hist_2",
+      "cant_estudiantes_compartidos_historico",
+      "jaccard_historico"
+    ],
+    "F4": [
+      "mismo_departamento",
+      "mismo_prefijo_curricular",
+      "anio_confirmado",
+      "mismo_anio",
+      "misma_carrera",
+      "log1p(cant_carreras_compartidas_hist)",
+      "log1p(min(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(max(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(cant_estudiantes_compartidos_historico)",
+      "jaccard_historico"
+    ],
+    "F5": [
+      "mismo_departamento",
+      "mismo_prefijo_curricular",
+      "anio_confirmado",
+      "mismo_anio",
+      "misma_carrera",
+      "log1p(cant_carreras_compartidas_hist)",
+      "log1p(min_insc_hist)",
+      "log1p(max_insc_hist)",
+      "log1p(max_insc_hist)-log1p(min_insc_hist)",
+      "ambas_sin_historial (max_insc_hist==0)",
+      "una_sin_historial (min==0 & max>0)",
+      "comparten_hist (compartidos>0)",
+      "log1p(cant_estudiantes_compartidos_historico)",
+      "jaccard_historico",
+      "coef_solapamiento (compartidos/min_insc_hist)",
+      "interaccion_ad_hoc (misma_carrera*mismo_anio + prefijo*mismo_anio + 0.5*(1-anio_conf)*misma_carrera)"
+    ],
+    "F6_sin_primer_anio": [
+      "mismo_departamento",
+      "mismo_prefijo_curricular",
+      "anio_confirmado_corregido_ABC",
+      "mismo_anio_corregido_ABC",
+      "misma_carrera",
+      "log1p(cant_carreras_compartidas_hist)",
+      "log1p(min(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(max(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(cant_estudiantes_compartidos_historico)",
+      "jaccard_historico"
+    ],
+    "F6": [
+      "mismo_departamento",
+      "mismo_prefijo_curricular",
+      "anio_confirmado_corregido_ABC",
+      "mismo_anio_corregido_ABC",
+      "misma_carrera",
+      "log1p(cant_carreras_compartidas_hist)",
+      "log1p(min(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(max(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(cant_estudiantes_compartidos_historico)",
+      "jaccard_historico",
+      "ambas_primer_anio (nivel 1 o A en ambas)"
+    ],
+    "F7": [
+      "mismo_departamento",
+      "mismo_prefijo_curricular",
+      "anio_confirmado_corregido_ABC",
+      "mismo_anio_corregido_ABC",
+      "misma_carrera",
+      "log1p(cant_carreras_compartidas_hist)",
+      "log1p(min(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(max(cant_inscriptos_hist_1, cant_inscriptos_hist_2))",
+      "log1p(cant_estudiantes_compartidos_historico)",
+      "jaccard_historico",
+      "ambas_primer_anio (nivel 1 o A en ambas)",
+      "log1p(vecinos_comunes_hist_2saltos)"
+    ]
+  }
+}

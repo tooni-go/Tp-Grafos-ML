@@ -1,0 +1,161 @@
+model_name,family,allowed_by_syllabus,feature_set,split,threshold,precision,recall,f1_score,pr_auc,roc_auc,accuracy,tp,fp,fn,tn,predicted_edges,positives_total,edges_to_positives_ratio,fp_per_tp,fit_seconds,notes
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.21,0.2761,0.2115,0.2395,0.1846,0.7651,0.9829,140,367,522,50946,507,662,0.766,2.621,0.22,Max_F1_Val
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.21,0.2711,0.2485,0.2593,0.1833,0.7665,0.9788,241,648,729,63441,889,970,0.916,2.689,0.22,Max_F1_Val (th de val)
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.1333,0.1252,0.423,0.1932,0.1846,0.7651,0.955,280,1956,382,49357,2236,662,3.378,6.986,0.22,Recall_Val_ge_30pct
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.1333,0.1527,0.4155,0.2233,0.1833,0.7665,0.9569,403,2236,567,61853,2639,970,2.721,5.548,0.22,Recall_Val_ge_30pct (th de val)
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.1333,0.1252,0.423,0.1932,0.1846,0.7651,0.955,280,1956,382,49357,2236,662,3.378,6.986,0.22,Recall_Val_ge_40pct
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.1333,0.1527,0.4155,0.2233,0.1833,0.7665,0.9569,403,2236,567,61853,2639,970,2.721,5.548,0.22,Recall_Val_ge_40pct (th de val)
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.0667,0.1252,0.423,0.1932,0.1846,0.7651,0.955,280,1956,382,49357,2236,662,3.378,6.986,0.22,Recall_Val_ge_50pct
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.0667,0.1527,0.4155,0.2233,0.1833,0.7665,0.9569,403,2236,567,61853,2639,970,2.721,5.548,0.22,Recall_Val_ge_50pct (th de val)
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.0,0.0127,1.0,0.0252,0.1846,0.7651,0.0127,662,51313,0,0,51975,662,78.512,77.512,0.22,Recall_Val_ge_60pct
+KNN_k15_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.0,0.0149,1.0,0.0294,0.1833,0.7665,0.0149,970,64089,0,0,65059,970,67.071,66.071,0.22,Recall_Val_ge_60pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.16,0.3113,0.2492,0.2768,0.2088,0.8154,0.9834,165,365,497,50948,530,662,0.801,2.212,0.22,Max_F1_Val
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.16,0.2912,0.2567,0.2729,0.2249,0.8289,0.9796,249,606,721,63483,855,970,0.881,2.434,0.22,Max_F1_Val (th de val)
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.1373,0.249,0.2795,0.2633,0.2088,0.8154,0.9801,185,558,477,50755,743,662,1.122,3.016,0.22,Recall_Val_ge_30pct
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.1373,0.2548,0.2856,0.2693,0.2249,0.8289,0.9769,277,810,693,63279,1087,970,1.121,2.924,0.22,Recall_Val_ge_30pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.098,0.1439,0.4063,0.2126,0.2088,0.8154,0.9617,269,1600,393,49713,1869,662,2.823,5.948,0.22,Recall_Val_ge_40pct
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.098,0.1592,0.4278,0.2321,0.2249,0.8289,0.9578,415,2191,555,61898,2606,970,2.687,5.28,0.22,Recall_Val_ge_40pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.0588,0.103,0.5529,0.1736,0.2088,0.8154,0.933,366,3188,296,48125,3554,662,5.369,8.71,0.22,Recall_Val_ge_50pct
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.0588,0.1126,0.5711,0.1881,0.2249,0.8289,0.9265,554,4368,416,59721,4922,970,5.074,7.884,0.22,Recall_Val_ge_50pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.0392,0.0762,0.6299,0.1359,0.2088,0.8154,0.898,417,5058,245,46255,5475,662,8.27,12.129,0.22,Recall_Val_ge_60pct
+KNN_k51_Manh_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.0392,0.0881,0.6412,0.155,0.2249,0.8289,0.8957,622,6435,348,57654,7057,970,7.275,10.346,0.22,Recall_Val_ge_60pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,validation,0.18,0.3164,0.216,0.2567,0.2051,0.8107,0.9841,143,309,519,51004,452,662,0.683,2.161,0.23,Max_F1_Val
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,test,0.18,0.3153,0.2526,0.2805,0.2273,0.8178,0.9807,245,532,725,63557,777,970,0.801,2.171,0.23,Max_F1_Val (th de val)
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,validation,0.1373,0.2428,0.2674,0.2545,0.2051,0.8107,0.98,177,552,485,50761,729,662,1.101,3.119,0.23,Recall_Val_ge_30pct
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,test,0.1373,0.2674,0.301,0.2832,0.2273,0.8178,0.9773,292,800,678,63289,1092,970,1.126,2.74,0.23,Recall_Val_ge_30pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,validation,0.098,0.1437,0.4018,0.2117,0.2051,0.8107,0.9619,266,1585,396,49728,1851,662,2.796,5.959,0.23,Recall_Val_ge_40pct
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,test,0.098,0.1606,0.4216,0.2326,0.2273,0.8178,0.9585,409,2138,561,61951,2547,970,2.626,5.227,0.23,Recall_Val_ge_40pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,validation,0.0588,0.0967,0.5438,0.1642,0.2051,0.8107,0.9295,360,3363,302,47950,3723,662,5.624,9.342,0.23,Recall_Val_ge_50pct
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,test,0.0588,0.1037,0.5835,0.176,0.2273,0.8178,0.9186,566,4894,404,59195,5460,970,5.629,8.647,0.23,Recall_Val_ge_50pct (th de val)
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,validation,0.0392,0.0754,0.6495,0.1351,0.2051,0.8107,0.894,430,5275,232,46038,5705,662,8.618,12.267,0.23,Recall_Val_ge_60pct
+KNN_k51_Manh_Unif_Scaled_F4_SymLog,KNN,True,F4_Simetrizadas_Log_10,test,0.0392,0.0848,0.6546,0.1501,0.2273,0.8178,0.8895,635,6855,335,57234,7490,970,7.722,10.795,0.23,Recall_Val_ge_60pct (th de val)
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.16,0.3034,0.2447,0.2709,0.2023,0.8151,0.9832,162,372,500,50941,534,662,0.807,2.296,0.21,Max_F1_Val
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.16,0.2844,0.2536,0.2681,0.2193,0.8252,0.9794,246,619,724,63470,865,970,0.892,2.516,0.21,Max_F1_Val (th de val)
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.1373,0.2425,0.2704,0.2557,0.2023,0.8151,0.98,179,559,483,50754,738,662,1.115,3.123,0.21,Recall_Val_ge_30pct
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.1373,0.255,0.2918,0.2721,0.2193,0.8252,0.9767,283,827,687,63262,1110,970,1.144,2.922,0.21,Recall_Val_ge_30pct (th de val)
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.098,0.1429,0.4018,0.2109,0.2023,0.8151,0.9617,266,1595,396,49718,1861,662,2.811,5.996,0.21,Recall_Val_ge_40pct
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.098,0.1563,0.4216,0.228,0.2193,0.8252,0.9574,409,2208,561,61881,2617,970,2.698,5.399,0.21,Recall_Val_ge_40pct (th de val)
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.0588,0.1021,0.5544,0.1724,0.2023,0.8151,0.9322,367,3229,295,48084,3596,662,5.432,8.798,0.21,Recall_Val_ge_50pct
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.0588,0.1094,0.5701,0.1836,0.2193,0.8252,0.9244,553,4500,417,59589,5053,970,5.209,8.137,0.21,Recall_Val_ge_50pct (th de val)
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,validation,0.0392,0.0759,0.6314,0.1356,0.2023,0.8151,0.8974,418,5087,244,46226,5505,662,8.316,12.17,0.21,Recall_Val_ge_60pct
+KNN_k51_Eucl_Unif_Scaled_F0,KNN,True,F0_Actuales_10,test,0.0392,0.087,0.6351,0.153,0.2193,0.8252,0.8952,616,6465,354,57624,7081,970,7.3,10.495,0.21,Recall_Val_ge_60pct (th de val)
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.2,0.3853,0.1979,0.2615,0.1963,0.8368,0.9858,131,209,531,51104,340,662,0.514,1.595,0.1,Max_F1_Val
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.2,0.4399,0.1546,0.2288,0.2082,0.8543,0.9845,150,191,820,63898,341,970,0.352,1.273,0.1,Max_F1_Val (th de val)
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0903,0.1783,0.3233,0.2299,0.1963,0.8368,0.9724,214,986,448,50327,1200,662,1.813,4.607,0.1,Recall_Val_ge_30pct
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0903,0.2055,0.3062,0.246,0.2082,0.8543,0.972,297,1148,673,62941,1445,970,1.49,3.865,0.1,Recall_Val_ge_30pct (th de val)
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0818,0.1578,0.3489,0.2173,0.1963,0.8368,0.968,231,1233,431,50080,1464,662,2.211,5.338,0.1,Recall_Val_ge_40pct
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0818,0.1897,0.3165,0.2372,0.2082,0.8543,0.9697,307,1311,663,62778,1618,970,1.668,4.27,0.1,Recall_Val_ge_40pct (th de val)
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0818,0.1578,0.3489,0.2173,0.1963,0.8368,0.968,231,1233,431,50080,1464,662,2.211,5.338,0.1,Recall_Val_ge_50pct
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0818,0.1897,0.3165,0.2372,0.2082,0.8543,0.9697,307,1311,663,62778,1618,970,1.668,4.27,0.1,Recall_Val_ge_50pct (th de val)
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.042,0.0804,0.639,0.1428,0.1963,0.8368,0.9023,423,4838,239,46475,5261,662,7.947,11.437,0.1,Recall_Val_ge_60pct
+DT_d5_leaf1_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.042,0.1305,0.5175,0.2085,0.2082,0.8543,0.9414,502,3344,468,60745,3846,970,3.965,6.661,0.1,Recall_Val_ge_60pct (th de val)
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.2,0.3389,0.2145,0.2627,0.2148,0.8653,0.9847,142,277,520,51036,419,662,0.633,1.951,0.13,Max_F1_Val
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.2,0.3842,0.2052,0.2675,0.227,0.8777,0.9832,199,319,771,63770,518,970,0.534,1.603,0.13,Max_F1_Val (th de val)
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0808,0.2129,0.2885,0.245,0.2148,0.8653,0.9774,191,706,471,50607,897,662,1.355,3.696,0.13,Recall_Val_ge_30pct
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0808,0.1941,0.3577,0.2516,0.227,0.8777,0.9683,347,1441,623,62648,1788,970,1.843,4.153,0.13,Recall_Val_ge_30pct (th de val)
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0785,0.1037,0.5831,0.176,0.2148,0.8653,0.9305,386,3338,276,47975,3724,662,5.625,8.648,0.13,Recall_Val_ge_40pct
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0785,0.1941,0.3577,0.2516,0.227,0.8777,0.9683,347,1441,623,62648,1788,970,1.843,4.153,0.13,Recall_Val_ge_40pct (th de val)
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0785,0.1037,0.5831,0.176,0.2148,0.8653,0.9305,386,3338,276,47975,3724,662,5.625,8.648,0.13,Recall_Val_ge_50pct
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0785,0.1941,0.3577,0.2516,0.227,0.8777,0.9683,347,1441,623,62648,1788,970,1.843,4.153,0.13,Recall_Val_ge_50pct (th de val)
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0541,0.1003,0.6012,0.1718,0.2148,0.8653,0.9262,398,3572,264,47741,3970,662,5.997,8.975,0.13,Recall_Val_ge_60pct
+DT_d6_leaf50_Gini_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0541,0.126,0.5515,0.2051,0.227,0.8777,0.9363,535,3712,435,60377,4247,970,4.378,6.938,0.13,Recall_Val_ge_60pct (th de val)
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.2,0.3226,0.2266,0.2662,0.2095,0.868,0.9841,150,315,512,50998,465,662,0.702,2.1,0.11,Max_F1_Val
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.2,0.3845,0.199,0.2622,0.2263,0.8793,0.9833,193,309,777,63780,502,970,0.518,1.601,0.11,Max_F1_Val (th de val)
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0808,0.2049,0.2885,0.2396,0.2095,0.868,0.9767,191,741,471,50572,932,662,1.408,3.88,0.11,Recall_Val_ge_30pct
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0808,0.1547,0.4464,0.2298,0.2263,0.8793,0.9554,433,2366,537,61723,2799,970,2.886,5.464,0.11,Recall_Val_ge_30pct (th de val)
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0799,0.0984,0.5408,0.1664,0.2095,0.868,0.931,358,3282,304,48031,3640,662,5.498,9.168,0.11,Recall_Val_ge_40pct
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0799,0.1547,0.4464,0.2298,0.2263,0.8793,0.9554,433,2366,537,61723,2799,970,2.886,5.464,0.11,Recall_Val_ge_40pct (th de val)
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0799,0.0984,0.5408,0.1664,0.2095,0.868,0.931,358,3282,304,48031,3640,662,5.498,9.168,0.11,Recall_Val_ge_50pct
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0799,0.1547,0.4464,0.2298,0.2263,0.8793,0.9554,433,2366,537,61723,2799,970,2.886,5.464,0.11,Recall_Val_ge_50pct (th de val)
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,validation,0.0347,0.0839,0.5876,0.1468,0.2095,0.868,0.913,389,4247,273,47066,4636,662,7.003,10.918,0.11,Recall_Val_ge_60pct
+DT_d6_leaf50_LogLoss_Unw_F0,DecisionTree,True,F0_Actuales_10,test,0.0347,0.1191,0.5876,0.1981,0.2263,0.8793,0.9291,570,4214,400,59875,4784,970,4.932,7.393,0.11,Recall_Val_ge_60pct (th de val)
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.18,0.3161,0.2221,0.2609,0.1961,0.8615,0.984,147,318,515,50995,465,662,0.702,2.163,0.23,Max_F1_Val
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.18,0.3455,0.2144,0.2646,0.2243,0.8626,0.9822,208,394,762,63695,602,970,0.621,1.894,0.23,Max_F1_Val (th de val)
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.1039,0.2245,0.2659,0.2434,0.1961,0.8615,0.979,176,608,486,50705,784,662,1.184,3.455,0.23,Recall_Val_ge_30pct
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.1039,0.2029,0.333,0.2521,0.2243,0.8626,0.9705,323,1269,647,62820,1592,970,1.641,3.929,0.23,Recall_Val_ge_30pct (th de val)
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.0834,0.1303,0.3912,0.1955,0.1961,0.8615,0.959,259,1729,403,49584,1988,662,3.003,6.676,0.23,Recall_Val_ge_40pct
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.0834,0.1606,0.4402,0.2353,0.2243,0.8626,0.9573,427,2232,543,61857,2659,970,2.741,5.227,0.23,Recall_Val_ge_40pct (th de val)
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.0666,0.1228,0.4985,0.197,0.1961,0.8615,0.9482,330,2358,332,48955,2688,662,4.06,7.145,0.23,Recall_Val_ge_50pct
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.0666,0.1448,0.5052,0.225,0.2243,0.8626,0.9481,490,2895,480,61194,3385,970,3.49,5.908,0.23,Recall_Val_ge_50pct (th de val)
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.0325,0.0975,0.5876,0.1673,0.1961,0.8615,0.9255,389,3599,273,47714,3988,662,6.024,9.252,0.23,Recall_Val_ge_60pct
+DT_d7_leaf75_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.0325,0.1145,0.5897,0.1917,0.2243,0.8626,0.9259,572,4425,398,59664,4997,970,5.152,7.736,0.23,Recall_Val_ge_60pct (th de val)
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.26,0.4024,0.1994,0.2667,0.2039,0.8597,0.986,132,196,530,51117,328,662,0.495,1.485,0.27,Max_F1_Val
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.26,0.4413,0.1588,0.2335,0.2228,0.8593,0.9845,154,195,816,63894,349,970,0.36,1.266,0.27,Max_F1_Val (th de val)
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.1071,0.1469,0.3671,0.2098,0.2039,0.8597,0.9648,243,1411,419,49902,1654,662,2.498,5.807,0.27,Recall_Val_ge_30pct
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.1071,0.1945,0.367,0.2543,0.2228,0.8593,0.9679,356,1474,614,62615,1830,970,1.887,4.14,0.27,Recall_Val_ge_30pct (th de val)
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.0938,0.1459,0.3822,0.2112,0.2039,0.8597,0.9636,253,1481,409,49832,1734,662,2.619,5.854,0.27,Recall_Val_ge_40pct
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.0938,0.1816,0.3866,0.2471,0.2228,0.8593,0.9649,375,1690,595,62399,2065,970,2.129,4.507,0.27,Recall_Val_ge_40pct (th de val)
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.0576,0.1149,0.5423,0.1896,0.2039,0.8597,0.941,359,2766,303,48547,3125,662,4.721,7.705,0.27,Recall_Val_ge_50pct
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.0576,0.1442,0.5072,0.2245,0.2228,0.8593,0.9478,492,2921,478,61168,3413,970,3.519,5.937,0.27,Recall_Val_ge_50pct (th de val)
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,validation,0.0342,0.0943,0.6073,0.1633,0.2039,0.8597,0.9207,402,3860,260,47453,4262,662,6.438,9.602,0.27,Recall_Val_ge_60pct
+DT_d8_leaf100_LogLoss_Unw_F5_Eng,DecisionTree,True,F5_Ingenieria_10Cols_16,test,0.0342,0.1092,0.6082,0.1852,0.2228,0.8593,0.9202,590,4813,380,59276,5403,970,5.57,8.158,0.27,Recall_Val_ge_60pct (th de val)
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.14,0.2878,0.213,0.2448,0.1792,0.8525,0.9833,141,349,521,50964,490,662,0.74,2.475,0.76,Max_F1_Val
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.14,0.3022,0.2237,0.2571,0.2043,0.8718,0.9807,217,501,753,63588,718,970,0.74,2.309,0.76,Max_F1_Val (th de val)
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.0807,0.1541,0.3006,0.2038,0.1792,0.8525,0.9701,199,1092,463,50221,1291,662,1.95,5.487,0.76,Recall_Val_ge_30pct
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.0807,0.2026,0.3237,0.2492,0.2043,0.8718,0.9709,314,1236,656,62853,1550,970,1.598,3.936,0.76,Recall_Val_ge_30pct (th de val)
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.0621,0.1128,0.4003,0.176,0.1792,0.8525,0.9522,265,2085,397,49228,2350,662,3.55,7.868,0.76,Recall_Val_ge_40pct
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.0621,0.1415,0.3979,0.2088,0.2043,0.8718,0.955,386,2341,584,61748,2727,970,2.811,6.065,0.76,Recall_Val_ge_40pct (th de val)
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.0475,0.0965,0.5121,0.1624,0.1792,0.8525,0.9327,339,3174,323,48139,3513,662,5.307,9.363,0.76,Recall_Val_ge_50pct
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.0475,0.1202,0.5206,0.1952,0.2043,0.8718,0.936,505,3698,465,60391,4203,970,4.333,7.323,0.76,Recall_Val_ge_50pct (th de val)
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.0361,0.0856,0.6012,0.1499,0.1792,0.8525,0.9132,398,4250,264,47063,4648,662,7.021,10.678,0.76,Recall_Val_ge_60pct
+LogReg_L2_C1_Unw_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.0361,0.1055,0.6227,0.1804,0.2043,0.8718,0.9156,604,5122,366,58967,5726,970,5.903,8.48,0.76,Recall_Val_ge_60pct (th de val)
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.42,0.2673,0.2281,0.2461,0.1743,0.8543,0.9822,151,414,511,50899,565,662,0.853,2.742,0.89,Max_F1_Val
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.42,0.2808,0.2423,0.2601,0.1955,0.8727,0.9794,235,602,735,63487,837,970,0.863,2.562,0.89,Max_F1_Val (th de val)
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.2997,0.1519,0.3051,0.2028,0.1743,0.8543,0.9694,202,1128,460,50185,1330,662,2.009,5.584,0.89,Recall_Val_ge_30pct
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.2997,0.187,0.3227,0.2368,0.1955,0.8727,0.969,313,1361,657,62728,1674,970,1.726,4.348,0.89,Recall_Val_ge_30pct (th de val)
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.2431,0.1125,0.4063,0.1762,0.1743,0.8543,0.9516,269,2122,393,49191,2391,662,3.612,7.888,0.89,Recall_Val_ge_40pct
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.2431,0.1421,0.4082,0.2108,0.1955,0.8727,0.9544,396,2391,574,61698,2787,970,2.873,6.038,0.89,Recall_Val_ge_40pct (th de val)
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.2068,0.1028,0.5045,0.1708,0.1743,0.8543,0.9376,334,2916,328,48397,3250,662,4.909,8.731,0.89,Recall_Val_ge_50pct
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.2068,0.1257,0.5082,0.2016,0.1955,0.8727,0.94,493,3429,477,60660,3922,970,4.043,6.955,0.89,Recall_Val_ge_50pct (th de val)
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,validation,0.1603,0.088,0.6057,0.1536,0.1743,0.8543,0.915,401,4157,261,47156,4558,662,6.885,10.367,0.89,Recall_Val_ge_60pct
+LogReg_L2_C1_Weight5_F5_Eng,LogisticRegression,True,F5_Ingenieria_10Cols_16,test,0.1603,0.1083,0.6175,0.1843,0.1955,0.8727,0.9185,599,4933,371,59156,5532,970,5.703,8.235,0.89,Recall_Val_ge_60pct (th de val)
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.12,0.3761,0.1949,0.2567,0.1721,0.8492,0.9856,129,214,533,51099,343,662,0.518,1.659,1.66,Max_F1_Val
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.12,0.3262,0.1567,0.2117,0.1796,0.8726,0.9826,152,314,818,63775,466,970,0.48,2.066,1.66,Max_F1_Val (th de val)
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0342,0.155,0.3006,0.2045,0.1721,0.8492,0.9702,199,1085,463,50228,1284,662,1.94,5.452,1.66,Recall_Val_ge_30pct
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0342,0.1802,0.3381,0.2351,0.1796,0.8726,0.9672,328,1492,642,62597,1820,970,1.876,4.549,1.66,Recall_Val_ge_30pct (th de val)
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0267,0.1033,0.4245,0.1661,0.1721,0.8492,0.9457,281,2440,381,48873,2721,662,4.11,8.683,1.66,Recall_Val_ge_40pct
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0267,0.1391,0.4289,0.21,0.1796,0.8726,0.9519,416,2575,554,61514,2991,970,3.084,6.19,1.66,Recall_Val_ge_40pct (th de val)
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0239,0.0933,0.5151,0.158,0.1721,0.8492,0.9301,341,3313,321,48000,3654,662,5.52,9.716,1.66,Recall_Val_ge_50pct
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0239,0.1208,0.499,0.1945,0.1796,0.8726,0.9384,484,3522,486,60567,4006,970,4.13,7.277,1.66,Recall_Val_ge_50pct (th de val)
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0213,0.0866,0.6088,0.1516,0.1721,0.8492,0.9132,403,4252,259,47061,4655,662,7.032,10.551,1.66,Recall_Val_ge_60pct
+SVM_Linear_C1_Unw_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0213,0.1101,0.6093,0.1865,0.1796,0.8726,0.9207,591,4778,379,59311,5369,970,5.535,8.085,1.66,Recall_Val_ge_60pct (th de val)
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.52,0.3077,0.2417,0.2707,0.1579,0.7387,0.9834,160,360,502,50953,520,662,0.785,2.25,52.0,Max_F1_Val
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.52,0.3055,0.2639,0.2832,0.1921,0.771,0.9801,256,582,714,63507,838,970,0.864,2.273,52.0,Max_F1_Val (th de val)
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.1072,0.199,0.3036,0.2404,0.1579,0.7387,0.9756,201,809,461,50504,1010,662,1.526,4.025,52.0,Recall_Val_ge_30pct
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.1072,0.1884,0.3608,0.2475,0.1921,0.771,0.9673,350,1508,620,62581,1858,970,1.915,4.309,52.0,Recall_Val_ge_30pct (th de val)
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0696,0.1157,0.4124,0.1807,0.1579,0.7387,0.9524,273,2086,389,49227,2359,662,3.563,7.641,52.0,Recall_Val_ge_40pct
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0696,0.0149,0.9948,0.0294,0.1921,0.771,0.0214,965,63659,5,430,64624,970,66.623,65.968,52.0,Recall_Val_ge_40pct (th de val)
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0696,0.1157,0.4124,0.1807,0.1579,0.7387,0.9524,273,2086,389,49227,2359,662,3.563,7.641,52.0,Recall_Val_ge_50pct
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0696,0.0149,0.9948,0.0294,0.1921,0.771,0.0214,965,63659,5,430,64624,970,66.623,65.968,52.0,Recall_Val_ge_50pct (th de val)
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,validation,0.0696,0.1157,0.4124,0.1807,0.1579,0.7387,0.9524,273,2086,389,49227,2359,662,3.563,7.641,52.0,Recall_Val_ge_60pct
+SVC_RBF_C1_Sub30k_Unw_ProbTrue_F5_Eng,SVM,True,F5_Ingenieria_10Cols_16,test,0.0696,0.0149,0.9948,0.0294,0.1921,0.771,0.0214,965,63659,5,430,64624,970,66.623,65.968,52.0,Recall_Val_ge_60pct (th de val)
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,validation,0.15,0.3561,0.1888,0.2468,0.1664,0.8358,0.9853,125,226,537,51087,351,662,0.53,1.808,0.06,Max_F1_Val
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,test,0.15,0.3253,0.1526,0.2077,0.1705,0.8627,0.9826,148,307,822,63782,455,970,0.469,2.074,0.06,Max_F1_Val (th de val)
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,validation,0.0607,0.1299,0.3021,0.1817,0.1664,0.8358,0.9653,200,1340,462,49973,1540,662,2.326,6.7,0.06,Recall_Val_ge_30pct
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,test,0.0607,0.1465,0.3763,0.2109,0.1705,0.8627,0.958,365,2127,605,61962,2492,970,2.569,5.827,0.06,Recall_Val_ge_30pct (th de val)
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,validation,0.0475,0.1152,0.4018,0.179,0.1664,0.8358,0.9531,266,2044,396,49269,2310,662,3.489,7.684,0.06,Recall_Val_ge_40pct
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,test,0.0475,0.1313,0.4351,0.2018,0.1705,0.8627,0.9487,422,2791,548,61298,3213,970,3.312,6.614,0.06,Recall_Val_ge_40pct (th de val)
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,validation,0.0425,0.0907,0.494,0.1532,0.1664,0.8358,0.9305,327,3279,335,48034,3606,662,5.447,10.028,0.06,Recall_Val_ge_50pct
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,test,0.0425,0.1072,0.4959,0.1762,0.1705,0.8627,0.9309,481,4008,489,60081,4489,970,4.628,8.333,0.06,Recall_Val_ge_50pct (th de val)
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,validation,0.0371,0.0777,0.6193,0.138,0.1664,0.8358,0.9015,410,4868,252,46445,5278,662,7.973,11.873,0.06,Recall_Val_ge_60pct
+LinReg_Ridge_a10_F5_Eng,LinearRegression,True,F5_Ingenieria_10Cols_16,test,0.0371,0.0953,0.6464,0.1661,0.1705,0.8627,0.9033,627,5951,343,58138,6578,970,6.781,9.491,0.06,Recall_Val_ge_60pct (th de val)
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,validation,0.2,0.4096,0.219,0.2854,0.2536,0.8848,0.986,145,209,517,51104,354,662,0.535,1.441,1.12,Max_F1_Val
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,test,0.2,0.4548,0.1969,0.2748,0.2787,0.8881,0.9845,191,229,779,63860,420,970,0.433,1.199,1.12,Max_F1_Val (th de val)
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,validation,0.1205,0.247,0.3066,0.2736,0.2536,0.8848,0.9793,203,619,459,50694,822,662,1.242,3.049,1.12,Recall_Val_ge_30pct
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,test,0.1205,0.3026,0.2979,0.3003,0.2787,0.8881,0.9793,289,666,681,63423,955,970,0.985,2.304,1.12,Recall_Val_ge_30pct (th de val)
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,validation,0.0898,0.1594,0.4169,0.2306,0.2536,0.8848,0.9646,276,1456,386,49857,1732,662,2.616,5.275,1.12,Recall_Val_ge_40pct
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,test,0.0898,0.212,0.4072,0.2789,0.2787,0.8881,0.9686,395,1468,575,62621,1863,970,1.921,3.716,1.12,Recall_Val_ge_40pct (th de val)
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,validation,0.0639,0.1245,0.5136,0.2004,0.2536,0.8848,0.9478,340,2392,322,48921,2732,662,4.127,7.035,1.12,Recall_Val_ge_50pct
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,test,0.0639,0.1518,0.4856,0.2313,0.2787,0.8881,0.9519,471,2632,499,61457,3103,970,3.199,5.588,1.12,Recall_Val_ge_50pct (th de val)
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,validation,0.0423,0.1005,0.5982,0.1721,0.2536,0.8848,0.9267,396,3543,266,47770,3939,662,5.95,8.947,1.12,Recall_Val_ge_60pct
+Ref_HGB_d6_Unw_F0,HistGradientBoosting (Ref),False,F0_Actuales_10,test,0.0423,0.1264,0.6268,0.2103,0.2787,0.8881,0.9298,608,4203,362,59886,4811,970,4.96,6.913,1.12,Recall_Val_ge_60pct (th de val)
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,validation,0.13,0.2805,0.2915,0.2859,0.2534,0.8794,0.9815,193,495,469,50818,688,662,1.039,2.565,1.36,Max_F1_Val
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,test,0.13,0.296,0.2969,0.2964,0.2715,0.889,0.979,288,685,682,63404,973,970,1.003,2.378,1.36,Max_F1_Val (th de val)
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,validation,0.1205,0.2603,0.3142,0.2847,0.2534,0.8794,0.9799,208,591,454,50722,799,662,1.207,2.841,1.36,Recall_Val_ge_30pct
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,test,0.1205,0.28,0.3103,0.2944,0.2715,0.889,0.9778,301,774,669,63315,1075,970,1.108,2.571,1.36,Recall_Val_ge_30pct (th de val)
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,validation,0.0939,0.1664,0.4003,0.235,0.2534,0.8794,0.9668,265,1328,397,49985,1593,662,2.406,5.011,1.36,Recall_Val_ge_40pct
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,test,0.0939,0.2135,0.3753,0.2721,0.2715,0.889,0.9701,364,1341,606,62748,1705,970,1.758,3.684,1.36,Recall_Val_ge_40pct (th de val)
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,validation,0.061,0.124,0.497,0.1985,0.2534,0.8794,0.9489,329,2324,333,48989,2653,662,4.008,7.064,1.36,Recall_Val_ge_50pct
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,test,0.061,0.1485,0.4876,0.2277,0.2715,0.889,0.9507,473,2712,497,61377,3185,970,3.284,5.734,1.36,Recall_Val_ge_50pct (th de val)
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,validation,0.0372,0.1016,0.6103,0.1742,0.2534,0.8794,0.9263,404,3573,258,47740,3977,662,6.008,8.844,1.36,Recall_Val_ge_60pct
+Ref_HGB_d6_Unw_F5_Eng,HistGradientBoosting (Ref),False,F5_Ingenieria_10Cols_16,test,0.0372,0.1185,0.6392,0.2,0.2715,0.889,0.9237,620,4611,350,59478,5231,970,5.393,7.437,1.36,Recall_Val_ge_60pct (th de val)

@@ -1,0 +1,11 @@
+split,profile,total_pairs,positives,negatives,share_of_all_positives_pct,share_of_all_negatives_pct,empirical_positive_rate_pct,negatives_per_positive
+validation (51.975),P1: compartidos_hist > 0 (Solapamiento histórico directo),930,161,769,24.32,1.5,17.312,4.8
+validation (51.975),"P2: compartidos_hist == 0, misma_carrera == 1, mismo_anio == 1",271,17,254,2.57,0.5,6.273,14.9
+validation (51.975),"P3: compartidos_hist == 0, misma_carrera == 1, mismo_anio == 0",2734,100,2634,15.11,5.13,3.658,26.3
+validation (51.975),"P4: compartidos_hist == 0, misma_carrera == 0, (mismo_anio==1 o mismo_depto/pref==1)",7848,199,7649,30.06,14.91,2.536,38.4
+validation (51.975),"P5: compartidos_hist == 0, misma_carrera == 0, mismo_anio == 0, mismo_depto/pref == 0 (Sin señal relacional)",40192,185,40007,27.95,77.97,0.46,216.3
+test (65.059),P1: compartidos_hist > 0 (Solapamiento histórico directo),1415,202,1213,20.82,1.89,14.276,6.0
+test (65.059),"P2: compartidos_hist == 0, misma_carrera == 1, mismo_anio == 1",420,85,335,8.76,0.52,20.238,3.9
+test (65.059),"P3: compartidos_hist == 0, misma_carrera == 1, mismo_anio == 0",4434,176,4258,18.14,6.64,3.969,24.2
+test (65.059),"P4: compartidos_hist == 0, misma_carrera == 0, (mismo_anio==1 o mismo_depto/pref==1)",9546,292,9254,30.1,14.44,3.059,31.7
+test (65.059),"P5: compartidos_hist == 0, misma_carrera == 0, mismo_anio == 0, mismo_depto/pref == 0 (Sin señal relacional)",49244,215,49029,22.16,76.5,0.437,228.0
