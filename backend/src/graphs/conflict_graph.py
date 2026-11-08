@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 import networkx as nx
 import pandas as pd
@@ -122,15 +122,70 @@ def validate_coloring(G: nx.Graph, coloring: Dict[str, int]) -> Tuple[bool, List
     return len(bad) == 0, bad
 
 
+def count_unique_students_in_clash(
+    coloring: Dict[str, int],
+    student_exams: Dict[str, Any],
+) -> Tuple[int, int, float]:
+    """Calcula la cantidad y porcentaje de personas únicas con al menos un conflicto real.
+
+    Un estudiante único sufre conflicto si al menos dos de las materias en las que está inscripto
+    quedaron asignadas al mismo turno de examen en el cronograma.
+    Cada estudiante se cuenta a lo sumo una vez (headcount), independientemente de cuántos
+    pares en choque presente.
+
+    Retorna: (total_alumnos_unicos, alumnos_unicos_en_choque, pct_alumnos_unicos_en_choque)
+    """
+    total = len(student_exams)
+    if total == 0:
+        return 0, 0, 0.0
+
+    affected = 0
+    for s_id, exams in student_exams.items():
+        unique_exams = set(exams)
+        turns = [coloring[e] for e in unique_exams if e in coloring]
+        if len(turns) != len(set(turns)):
+            affected += 1
+
+    pct = round(100.0 * affected / total, 2)
+    return total, affected, pct
+
+
+def load_student_exams_1994(
+    students_csv: Path | str,
+    enrolments_csv: Path | str,
+    target_cohort: str = "actual_1994",
+) -> Dict[str, List[str]]:
+    """Carga el mapa de inscripciones `student_id -> [exam_id, ...]` para la cohorte indicada."""
+    curr_students: Set[str] = set()
+    with Path(students_csv).open("r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row.get("cohort_group") == target_cohort:
+                curr_students.add(row["student_id"])
+
+    student_exams: Dict[str, List[str]] = {s_id: [] for s_id in curr_students}
+    with Path(enrolments_csv).open("r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            s_id = row.get("student_id")
+            e_id = row.get("exam_id")
+            if s_id in student_exams and e_id:
+                student_exams[s_id].append(e_id)
+
+    return student_exams
+
+
 def evaluate_against_real(
     coloring: Dict[str, int],
     real_pairs_df: pd.DataFrame,
     predicted_graph: Optional[nx.Graph] = None,
+    student_exams: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Mide un cronograma contra los conflictos reales de la cohorte 1994.
 
     Un par real está en choque si sus dos materias quedaron en el mismo turno.
-    Devuelve pares reales en choque, alumnos afectados y % cubierto.
+    Devuelve pares reales en choque, incidencias de conflicto estudiante-par y % de incidencias.
+    Si se pasa `student_exams`, calcula la cantidad y porcentaje de personas únicas afectadas (headcount).
     Si se pasa `predicted_graph`, agrega precisión/recall de aristas (TP/FP/FN).
     """
     real = real_pairs_df.loc[real_pairs_df["cant_estudiantes_afectados"] > 0,
@@ -149,6 +204,13 @@ def evaluate_against_real(
         "alumnos_en_choque": clash_students,
         "pct_alumnos_en_choque": round(100.0 * clash_students / total_students, 2) if total_students else 0.0,
     }
+    if student_exams is not None:
+        tot_u, aff_u, pct_u = count_unique_students_in_clash(coloring, student_exams)
+        out.update({
+            "alumnos_unicos_total": tot_u,
+            "alumnos_unicos_en_choque": aff_u,
+            "pct_alumnos_unicos_en_choque": pct_u,
+        })
     if predicted_graph is not None:
         real_edges = {frozenset(e) for e in zip(real["materia_id_1"], real["materia_id_2"])}
         pred_edges = {frozenset(e) for e in predicted_graph.edges()}
