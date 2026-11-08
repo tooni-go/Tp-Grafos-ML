@@ -28,15 +28,14 @@ subject_pairs_poc.csv (319.600 pares, 10 features)
   -> evaluate_against_real  -> choques reales, alumnos afectados, TP/FP/FN de aristas
 ```
 
-El modelo y el umbral son los oficiales de la rama ML, sin modificarlos:
-`KNN_Full_Unweighted` (`results/models/knn_full_unweighted.joblib`) y `τ = 0.21`
-(leído de `results/metrics/metrics_summary.json`). No se regeneraron datos ni se reentrenó.
+El modelo y el umbral son los oficiales de la rama ML:
+`DecisionTree_Full_Unweighted` (`results/models/decision_tree_full_unweighted.joblib`) y `τ = 0.20`
+(leído de `results/metrics/metrics_summary.json`).
 
 ## 3. Predicciones honestas para las 800 materias (`predicted_pairs.py`)
 
 El modelo se entrenó con 714 materias; el grafo tiene 800 nodos. Para los pares de entrenamiento
-la predicción sería *in-sample* (con KNN, cada punto es su propio vecino) y daría un cronograma
-optimista. Por eso hay dos modos:
+la predicción sería *in-sample* y daría un cronograma optimista. Por eso hay dos modos:
 
 - **`oof` (por defecto):** validación cruzada de 5 folds **por materia**. Cada par se predice con
   un modelo (hiperparámetros clonados del `.joblib` oficial) que nunca vio ninguna de sus dos
@@ -50,31 +49,31 @@ Las probabilidades se cachean en `results/predictions/pair_probabilities_oof.csv
 
 Referencia oráculo (grafo real, 4.468 aristas): **19 turnos**, 0 choques. Total real: 28.677 alumno-choques.
 
-| τ (≥ k vecinos positivos de 15) | Aristas | Turnos | ¿Cabe en 32? | Alumnos en choque | % | Precisión aristas | Recall aristas |
+| τ | Aristas | Turnos | ¿Cabe en 32? | Alumnos en choque | % | Precisión aristas | Recall aristas |
 |---|---|---|---|---|---|---|---|
-| 0.033 (k=1) | 31.715 | 53 | No | 215 | 0,75% | 0,080 | 0,569 |
-| 0.100 (k=2) | 13.925 | 31 | Sí | 650 | 2,27% | 0,128 | 0,398 |
-| 0.167 (k=3) | 7.595 | 25 | Sí | 1.273 | 4,44% | 0,173 | 0,293 |
-| **0.21 oficial (k=4)** | **4.342** | **18** | **Sí** | **2.041** | **7,12%** | **0,224** | **0,218** |
-| 0.300 (k=5) | 2.529 | 9 | Sí | 3.283 | 11,45% | 0,287 | 0,163 |
-| 0.367 (k=6) | 1.338 | 9 | Sí | 5.247 | 18,30% | 0,420 | 0,126 |
-| 0.500 (k=8) | 731 | 7 | Sí | 8.029 | 28,00% | 0,536 | 0,088 |
-
-Con el modo `final` y τ = 0.21: 4.287 aristas, 24 turnos, 5,9% de alumnos en choque
-(más optimista por el efecto in-sample; no usar como resultado principal).
+| 0.05 | 23.286 | 139 | No | 307 | 1,07% | 0,106 | 0,554 |
+| 0.10 | 3.749 | 15 | Sí | 2.412 | 8,41% | 0,277 | 0,232 |
+| 0.15 | 3.019 | 14 | Sí | 2.996 | 10,45% | 0,309 | 0,209 |
+| **0.20 oficial** | **2.032** | **11** | **Sí** | **3.723** | **12,98%** | **0,374** | **0,170** |
+| 0.25 | 1.659 | 12 | Sí | 4.371 | 15,24% | 0,412 | 0,153 |
+| 0.30 | 1.029 | 9 | Sí | 5.466 | 19,06% | 0,505 | 0,116 |
+| 0.40 | 669 | 9 | Sí | 6.598 | 23,01% | 0,607 | 0,091 |
+| 0.50 | 524 | 9 | Sí | 7.649 | 26,67% | 0,678 | 0,080 |
 
 ### Lectura
-1. **Tradeoff turnos vs. choques reales.** Bajar τ agrega aristas (más FP), exige más turnos y
-   reduce los choques reales; subir τ hace lo contrario. Con τ = 0.21 el cronograma usa 18 turnos
-   (incluso uno menos que el oráculo) pero deja ~7% de los alumno-choques sin resolver.
-2. **Límite del calendario.** Con el calendario de 32 turnos, el τ más bajo utilizable es ≈ 0.10
-   (31 turnos, 2,3% de alumno-choques). Por debajo (k=1) hacen falta 53 turnos y no cabe.
-3. **Causa raíz.** La precisión de aristas del ML es baja (~22% en el umbral oficial), y muchos
-   conflictos reales son de 1 solo alumno en optativas sin historial (ver
-   `experiments/cierre_ml/informe_cierre_ml.md`). El grafo predicho mezcla aristas falsas y omite
-   conflictos reales; ese es el costo que reporta `evaluate_against_real`.
-4. **Probabilidades discretas.** KNN (k=15) devuelve múltiplos de 1/15, por lo que solo hay 15
-   umbrales distintos. El barrido usa el punto medio (k−0,5)/15 para evitar errores de redondeo.
+1. **Tradeoff turnos vs. choques reales.** Bajar τ agrega aristas (más aristas preventivas), exige más turnos y
+   reduce los choques reales; subir τ genera menos aristas, compacta el calendario en menos turnos pero deja más choques.
+   Con τ = 0.20 el cronograma utiliza **11 turnos** (muy holgado dentro del calendario de 32 turnos) y contiene
+   el 87,02% de los alumnos sin conflicto (12,98% en choque).
+2. **Mayor precisión del Árbol de Decisión.** Frente a KNN (que tenía una precisión de aristas del 22,4% en τ=0.21),
+   el Árbol de Decisión alcanza un **37,35% de precisión** con τ=0.20 (y más del 50% con τ >= 0.30). Esto evita
+   la sobrecarga de falsos positivos en el grafo de incompatibilidad.
+3. **Límite del calendario.** Con el calendario de 32 turnos, los umbrales utilizables van desde τ ≈ 0.10
+   (15 turnos, 8,41% de alumno-choques) hasta τ = 0.50 (9 turnos). Por debajo de 0.05 la cantidad de aristas
+   se dispara y exige 139 turnos.
+4. **Eficiencia computacional.** A diferencia de KNN (que requería calcular distancias sobre 319.600 pares en 5 folds
+   tardando varios minutos), el Árbol de Decisión evalúa reglas de corte ortogonales en milisegundos, permitiendo
+   calcular la validación cruzada OOF completa en segundos.
 
 ## 5. API de `conflict_graph.py`
 
@@ -92,7 +91,7 @@ Con el modo `final` y τ = 0.21: 4.287 aristas, 24 turnos, 5,9% de alumnos en ch
 ## 6. Cómo ejecutarlo
 
 ```bash
-python -m src.graphs.run_schedule                      # τ oficial 0.21, modo oof
+python -m src.graphs.run_schedule                      # τ oficial 0.20, modo oof
 python -m src.graphs.run_schedule --threshold 0.10     # más turnos, menos choques
 python -m src.graphs.run_schedule --strategy saturation_largest_first
 python -m src.graphs.run_schedule --sweep              # results/graphs/threshold_sweep.csv
