@@ -107,21 +107,22 @@ src/
 - [x] Endpoints `GET /exams`, `GET /exams/{id}`, `GET /departments`.
 - [x] 23 tests automatizados pasando al 100%.
 
-### Etapa 2 — Integración del Grafo [SIGUIENTE INCREMENTO]
-- [ ] Precarga de `results/predictions/pair_probabilities_oof.csv` en `app.state.probabilities_df` e indexación de pares para búsqueda instantánea en `app.state.pairs_prob_map`.
-- [ ] Schemas Pydantic v2 en `src/schemas/graph.py` (`GraphEdgeOut`, `GraphResponse`, `ConflictPairResponse`).
-- [ ] Servicio `src/services/graph_service.py` (`build_graph_for_threshold`, `get_graph_statistics`, `get_pair_conflict`).
-- [ ] Endpoints en `src/api/v1/endpoints/graph.py`:
+### Etapa 2 — Integración del Grafo [COMPLETADA]
+- [x] Precarga de `results/predictions/pair_probabilities_oof.csv` en `app.state.probabilities_df` e indexación de pares para búsqueda instantánea en `app.state.pairs_prob_map`.
+- [x] Schemas Pydantic v2 en `src/schemas/graph.py` (`GraphEdgeOut`, `GraphResponse`, `ConflictPairResponse`).
+- [x] Servicio `src/services/graph_service.py` (`build_graph_for_threshold`, `get_graph_statistics`, `get_pair_probability_from_map`).
+- [x] Endpoints en `src/api/v1/endpoints/graph.py`:
   - `GET /api/v1/graph`: Construye el subgrafo predicho para el umbral solicitado (default: `0.20`), computa densidad, componentes conexas, nodos aislados y lista de aristas.
   - `GET /api/v1/conflicts/pair`: Consulta directa de la probabilidad entre dos materias del catálogo con validación de auto-pares (400) e IDs inexistentes (404).
-- [ ] Tests automatizados en `tests/test_api_graph.py`.
+- [x] Tests automatizados en `tests/test_api_graph.py`.
 
-### Etapa 3 — Generación de Cronogramas
-- [ ] Conexión con `greedy_coloring`, `build_schedule` y `validate_coloring`.
-- [ ] Endpoint `POST /api/v1/schedule` validando límite de 32 turnos.
-- [ ] Tests de validación de coloraciones disjuntas y estrategias.
+### Etapa 3 — Generación de Cronogramas [COMPLETADA]
+- [x] Conexión con `greedy_coloring`, `build_schedule` y `validate_coloring`.
+- [x] Endpoint `POST /api/v1/schedule` validando límite de 32 turnos y generando asignación disjunta (11 turnos a $\theta = 0.20$).
+- [x] Endpoint `GET /api/v1/schedule/strategies` exponiendo las 7 heurísticas soportadas.
+- [x] Tests automatizados en `tests/test_api_schedule.py`.
 
-### Etapa 4 — Evaluación y Cierre
+### Etapa 4 — Evaluación y Cierre [SIGUIENTE INCREMENTO]
 - [ ] Conexión con `evaluate_against_real` sobre los pares de 1994.
 - [ ] Endpoint `POST /api/v1/schedule/evaluate`.
 - [ ] Tests de integración punta a punta y documentación final.

@@ -2,6 +2,11 @@
 
 from src.schemas.catalog import DepartmentOut, ExamListResponse, ExamOut
 from src.schemas.graph import ConflictPairResponse, GraphEdgeOut, GraphResponse
+from src.schemas.schedule import (
+    ScheduleRequest,
+    ScheduleResponse,
+    ScheduleStrategyOut,
+)
 
 __all__ = [
     "ConflictPairResponse",
@@ -10,4 +15,7 @@ __all__ = [
     "ExamOut",
     "GraphEdgeOut",
     "GraphResponse",
+    "ScheduleRequest",
+    "ScheduleResponse",
+    "ScheduleStrategyOut",
 ]
