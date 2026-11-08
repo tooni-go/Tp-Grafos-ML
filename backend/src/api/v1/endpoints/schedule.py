@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, HTTPException, Request
+import pandas as pd
+from fastapi import APIRouter, Body, HTTPException, Query, Request
 
+from src.common.schema import PROJECT_ROOT
+from src.core.config import settings
 from src.schemas.catalog import ExamOut
 from src.schemas.schedule import (
     ScheduleEvaluationResponse,
@@ -20,6 +23,31 @@ from src.services.schedule_service import (
 )
 
 router = APIRouter()
+
+
+@router.get(
+    "/schedule",
+    response_model=ScheduleResponse,
+    summary="Generar cronograma de exámenes (GET)",
+)
+def get_schedule(
+    request: Request,
+    threshold: Optional[float] = Query(
+        None,
+        gt=0.0,
+        lt=1.0,
+        description="Umbral de probabilidad de conflicto en (0, 1). Por defecto: calibrado oficial (0.20)",
+        examples=[0.20],
+    ),
+    strategy: str = Query(
+        "largest_first",
+        description="Heurística de coloreo greedy (ej. 'largest_first', 'saturation_largest_first')",
+        examples=["largest_first"],
+    ),
+) -> ScheduleResponse:
+    """Genera una asignación de exámenes a turnos sin conflictos mediante coloreo de grafos (método GET)."""
+    payload = ScheduleRequest(threshold=threshold, strategy=strategy)
+    return post_schedule(request=request, payload=payload)
 
 
 @router.post("/schedule", response_model=ScheduleResponse, summary="Generar cronograma de exámenes")
@@ -83,6 +111,57 @@ def get_strategies() -> List[ScheduleStrategyOut]:
     return [ScheduleStrategyOut(**item) for item in strategies]
 
 
+@router.get(
+    "/schedule/sweep",
+    summary="Obtener barrido de umbrales precomputado",
+)
+def get_schedule_sweep() -> List[Dict[str, Any]]:
+    """Retorna los puntos del barrido de umbrales precalculado para análisis de compensación."""
+    sweep_path = PROJECT_ROOT / "results" / "graphs" / "threshold_sweep.csv"
+    if not sweep_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="El archivo threshold_sweep.csv no existe.",
+        )
+    df = pd.read_csv(sweep_path)
+    points: List[Dict[str, Any]] = []
+    for _, row in df.iterrows():
+        pct_choque = float(row.get("pct_alumnos_en_choque", 0.0))
+        points.append({
+            "threshold": float(row["threshold"]),
+            "turnos": int(row["turnos"]),
+            "alumnos_protegidos_pct": round(100.0 - pct_choque, 2),
+            "precision_aristas": float(row.get("precision_aristas", 0.0)),
+            "aristas": int(row.get("aristas_predichas", 0)),
+        })
+    return points
+
+
+@router.get(
+    "/schedule/evaluate",
+    response_model=ScheduleEvaluationResponse,
+    summary="Evaluar cronograma contra conflictos reales de 1994 (GET)",
+)
+def get_schedule_evaluate(
+    request: Request,
+    threshold: Optional[float] = Query(
+        None,
+        gt=0.0,
+        lt=1.0,
+        description="Umbral de probabilidad de conflicto en (0, 1). Por defecto: calibrado oficial (0.20)",
+        examples=[0.20],
+    ),
+    strategy: str = Query(
+        "largest_first",
+        description="Heurística de coloreo greedy (ej. 'largest_first', 'saturation_largest_first')",
+        examples=["largest_first"],
+    ),
+) -> ScheduleEvaluationResponse:
+    """Evalúa la eficacia de un cronograma generado por ML comparándolo con los choques reales observados (método GET)."""
+    payload = ScheduleRequest(threshold=threshold, strategy=strategy)
+    return post_schedule_evaluate(request=request, payload=payload)
+
+
 @router.post(
     "/schedule/evaluate",
     response_model=ScheduleEvaluationResponse,
@@ -129,3 +208,28 @@ def post_schedule_evaluate(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return ScheduleEvaluationResponse(**result)
+
+
+@router.get(
+    "/stats",
+    response_model=ScheduleEvaluationResponse,
+    summary="Alias para evaluar cronograma y métricas (GET)",
+    include_in_schema=False,
+)
+def get_stats(
+    request: Request,
+    threshold: Optional[float] = Query(None, gt=0.0, lt=1.0),
+    strategy: str = Query("largest_first"),
+) -> ScheduleEvaluationResponse:
+    """Alias compatible con /api/stats para frontend."""
+    return get_schedule_evaluate(request=request, threshold=threshold, strategy=strategy)
+
+
+@router.get(
+    "/sweep",
+    summary="Alias para barrido de umbrales",
+    include_in_schema=False,
+)
+def get_sweep() -> List[Dict[str, Any]]:
+    """Alias compatible con /api/sweep para frontend."""
+    return get_schedule_sweep()

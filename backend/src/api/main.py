@@ -98,6 +98,9 @@ def create_app() -> FastAPI:
     # Registro de rutas bajo el prefijo /api/v1
     app.include_router(api_router, prefix=settings.API_V1_STR)
 
+    # Registro de rutas bajo el prefijo /api para compatibilidad directa con clientes y frontend
+    app.include_router(api_router, prefix="/api", include_in_schema=False)
+
     @app.get("/", include_in_schema=False)
     def root() -> Dict[str, Any]:
         return {

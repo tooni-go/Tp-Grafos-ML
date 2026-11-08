@@ -31,7 +31,7 @@ El flujo de trabajo se compone de tres etapas integradas:
 
 ## 3. Arquitectura General del Repositorio
 
-La estructura del proyecto separa la lógica del servicio y motor de cálculo de los recursos analíticos y documentales:
+La estructura del proyecto organiza la solución como un monorepo modular separando el backend computacional del frontend interactivo:
 
 ```
 Tp-Grafos-ML/
@@ -40,9 +40,13 @@ Tp-Grafos-ML/
 │   ├── docs/                      # Especificaciones y roadmap del backend
 │   ├── results/                   # Modelos oficiales, métricas y predicciones
 │   ├── src/                       # API FastAPI, inferencia ML, grafos y servicios
-│   ├── tests/                     # Suite de pruebas automatizadas (37 tests)
+│   ├── tests/                     # Suite de pruebas automatizadas (43 tests)
 │   ├── requirements.txt           # Dependencias de Python del backend
 │   └── README.md                  # Guía completa de instalación y uso del backend
+├── frontend/                      # Aplicación Web SPA interactiva
+│   ├── src/                       # Componentes React (Grafo, Cronograma, Métricas)
+│   ├── package.json               # Dependencias de Node/React
+│   └── vite.config.ts             # Configuración de compilación Vite
 ├── docs/                          # Documentación metodológica y diseño de fases
 ├── experiments/                   # Registros de experimentación y prototipos
 ├── notebooks/                     # Notebooks de exploración y auditoría
@@ -54,45 +58,45 @@ Tp-Grafos-ML/
 
 ## 4. Tecnologías Utilizadas
 
-- **Lenguaje:** Python 3.10+
-- **Machine Learning & Datos:** `scikit-learn`, `pandas`, `numpy`, `joblib`
-- **Modelado de Grafos & Heurísticas:** `networkx`
-- **API & Servicios Web:** `fastapi`, `uvicorn`, `pydantic` v2
-- **Testing & Aserciones:** `unittest`
+- **Backend:** Python 3.10+, `scikit-learn`, `pandas`, `numpy`, `networkx`, `joblib`, `fastapi`, `uvicorn`, `pydantic` v2, `unittest`
+- **Frontend:** React 18, TypeScript, Vite, Canvas API / HTML5, Lucide React
 
 ---
 
 ## 5. Estado Actual del Desarrollo
 
 - **Investigación y Modelado ML (Completado):** Preparación diádica de datos, validación cruzada estratificada OOF (319.600 pares evaluados), calibración de umbrales óptimos y comparación de algoritmos.
-- **Backend API REST (Etapas 1 a 4 Completadas):**
+- **Backend API REST (Completado):**
   - **Catálogo de Exámenes:** Paginación, búsqueda y filtros sobre los 800 exámenes y sus departamentos.
   - **Grafo de Conflictos:** Consulta de métricas topológicas, lista de aristas con umbral configurable y consulta simétrica de probabilidades por par.
   - **Generación de Cronogramas:** Asignación de turnos con 7 heurísticas de coloreo, validación formal de adyacencia y control de capacidad del calendario ($\le 32$ turnos).
   - **Evaluación vs. Cohorte 1994:** Auditoría de efectividad contra ground truth histórico, reducción del 87.02% de incidencias potenciales de solapamiento entre pares, métricas de alumnos únicos afectados y matriz de confusión de aristas.
   - **Cobertura de Pruebas:** 43 tests automatizados unitarios y de integración.
-- **Próximos Pasos:** Integración con futura interfaz de usuario (frontend SPA).
+- **Frontend Interactivo (Completado):** Visualización interactiva del grafo de conflictos en canvas, cronograma distribuido por turnos y materias, selector dinámico de umbral ($\tau$) y heurísticas de coloreo, y panel de KPIs/métricas en tiempo real.
 
 ---
 
 ## 6. Ejecución Local
 
-Todo el código ejecutable, la API y la suite de pruebas se operan desde el directorio `backend/`.
-
-Para comenzar, ingresá en la carpeta:
-
+### Backend (FastAPI)
+Ingresá al directorio `backend/`:
 ```bash
 cd backend
+python -m venv .venv
+source .venv/bin/activate  # En Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn src.api.main:app --reload --port 8000
 ```
+Consultá el manual detallado en [**`backend/README.md`**](backend/README.md).
 
-Para consultar las instrucciones completas sobre:
-- Configuración y activación de entornos virtuales (`venv` en Linux/WSL o Windows),
-- Instalación de librerías (`requirements.txt`),
-- Puesta en marcha del servidor FastAPI con recarga en vivo (`uvicorn`),
-- Ejecución de la suite completa de pruebas unitarias (`unittest`), y
-- Comandos CLI del generador de cronogramas,
-
-consultá el manual detallado en [**`backend/README.md`**](backend/README.md).
+### Frontend (React + Vite)
+En otra terminal, ingresá al directorio `frontend/`:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+La aplicación abrirá en `http://localhost:5173`. Puede funcionar en modo **Offline (Mock)** con datos precalculados o conectada en vivo al Backend (`VITE_API_URL=http://localhost:8000`).
 
 ---
 
@@ -114,31 +118,6 @@ El módulo `src/inference/predict_conflicts.py` encapsula la inferencia producti
 8. `cant_inscriptos_hist_2` (`int`/`float`)
 9. `cant_estudiantes_compartidos_historico` (`int`/`float`)
 10. `jaccard_historico` (`float`)
-
-### Ejemplo de Integración en Python (desde `backend/`)
-
-```python
-import pandas as pd
-from src.inference import load_conflict_model, predict_conflict_pairs
-
-# 1. Leer conjunto de pares a evaluar
-pares_df = pd.read_csv("data/processed/ml_test_full.csv")
-
-# 2. Cargar modelo oficial (opcional, predict_conflict_pairs lo carga por defecto)
-modelo = load_conflict_model()
-
-# 3. Estimar probabilidades y clasificar según el umbral oficial (0.20)
-predicciones_df = predict_conflict_pairs(pares_df, model=modelo)
-
-# 4. Extraer los pares conflictivos para alimentar el grafo de NetworkX
-aristas = list(
-    predicciones_df.loc[
-        predicciones_df["pred_conflicto"] == 1,
-        ["materia_id_1", "materia_id_2"],
-    ].itertuples(index=False, name=None)
-)
-print(f"Aristas de incompatibilidad identificadas: {len(aristas)}")
-```
 
 ---
 
