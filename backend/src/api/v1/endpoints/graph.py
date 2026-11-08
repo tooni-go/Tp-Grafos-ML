@@ -120,9 +120,9 @@ def get_conflict_pair(
     )
 
     return ConflictPairResponse(
-        materia_id_1=id1,
-        materia_id_2=id2,
-        prob_conflicto=round(float(prob), 4),
-        es_conflicto=bool(prob >= resolved_threshold),
-        threshold_aplicado=resolved_threshold,
+        exam_id_1=id1,
+        exam_id_2=id2,
+        conflict_probability=round(float(prob), 4),
+        has_conflict=bool(prob >= resolved_threshold),
+        applied_threshold=resolved_threshold,
     )

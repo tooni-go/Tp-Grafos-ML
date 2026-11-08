@@ -30,8 +30,8 @@ class GraphResponse(BaseModel):
 class ConflictPairResponse(BaseModel):
     """Respuesta a la consulta de probabilidad y conflicto entre dos materias."""
 
-    materia_id_1: str = Field(..., description="ID de la primera materia", examples=["ACC1"])
-    materia_id_2: str = Field(..., description="ID de la segunda materia", examples=["ACC2"])
-    prob_conflicto: float = Field(..., description="Probabilidad predicha de conflicto", examples=[0.8542])
-    es_conflicto: bool = Field(..., description="Indica si prob_conflicto >= threshold_aplicado", examples=[True])
-    threshold_aplicado: float = Field(..., description="Umbral de corte aplicado para la clasificación", examples=[0.20])
+    exam_id_1: str = Field(..., description="ID de la primera materia", examples=["ACC1"])
+    exam_id_2: str = Field(..., description="ID de la segunda materia", examples=["ACC2"])
+    conflict_probability: float = Field(..., description="Probabilidad predicha de conflicto", examples=[0.8542])
+    has_conflict: bool = Field(..., description="Indica si conflict_probability >= applied_threshold", examples=[True])
+    applied_threshold: float = Field(..., description="Umbral de corte aplicado para la clasificación", examples=[0.20])

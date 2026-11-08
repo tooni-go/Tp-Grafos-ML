@@ -59,7 +59,7 @@ class TestApiGraph(unittest.TestCase):
             self.assertEqual(response.status_code, 422)
 
     def test_get_conflict_pair_success(self) -> None:
-        """Verifica consulta exitosa de probabilidad entre dos materias del catálogo."""
+        """Verifica consulta exitosa de probabilidad entre dos materias del catálogo con nombres en inglés."""
         id1 = "AA2016E1"
         id2 = "AAA011E1"
         response = self.client.get(
@@ -68,14 +68,43 @@ class TestApiGraph(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = response.json()
-        self.assertEqual(data.get("materia_id_1"), id1)
-        self.assertEqual(data.get("materia_id_2"), id2)
-        self.assertIsInstance(data.get("prob_conflicto"), float)
-        self.assertIsInstance(data.get("es_conflicto"), bool)
-        self.assertEqual(data.get("threshold_aplicado"), 0.20)
+        # 1. Verificar los 5 campos nuevos estandarizados en inglés
+        self.assertEqual(data.get("exam_id_1"), id1)
+        self.assertEqual(data.get("exam_id_2"), id2)
+        self.assertIsInstance(data.get("conflict_probability"), float)
+        self.assertIsInstance(data.get("has_conflict"), bool)
+        self.assertEqual(data.get("applied_threshold"), 0.20)
         self.assertEqual(
-            data.get("es_conflicto"), data["prob_conflicto"] >= data["threshold_aplicado"]
+            data.get("has_conflict"),
+            data["conflict_probability"] >= data["applied_threshold"],
         )
+
+        # 2. Verificar que NO se expongan los nombres anteriores en español
+        self.assertNotIn("materia_id_1", data)
+        self.assertNotIn("materia_id_2", data)
+        self.assertNotIn("prob_conflicto", data)
+        self.assertNotIn("es_conflicto", data)
+        self.assertNotIn("threshold_aplicado", data)
+
+        # 3. Verificar comportamiento ante variación de umbral (casos de conflicto y no conflicto)
+        # Umbral muy bajo (0.001): debe ser conflicto si prob > 0
+        prob = data["conflict_probability"]
+        resp_low_th = self.client.get(
+            f"{settings.API_V1_STR}/conflicts/pair?exam_id_1={id1}&exam_id_2={id2}&threshold=0.001"
+        )
+        self.assertEqual(resp_low_th.status_code, 200)
+        data_low = resp_low_th.json()
+        self.assertEqual(data_low.get("applied_threshold"), 0.001)
+        self.assertEqual(data_low.get("has_conflict"), prob >= 0.001)
+
+        # Umbral muy alto (0.999): no debe ser conflicto si prob < 0.999
+        resp_high_th = self.client.get(
+            f"{settings.API_V1_STR}/conflicts/pair?exam_id_1={id1}&exam_id_2={id2}&threshold=0.999"
+        )
+        self.assertEqual(resp_high_th.status_code, 200)
+        data_high = resp_high_th.json()
+        self.assertEqual(data_high.get("applied_threshold"), 0.999)
+        self.assertEqual(data_high.get("has_conflict"), prob >= 0.999)
 
     def test_get_conflict_pair_order_invariance(self) -> None:
         """Verifica que el orden de los IDs no altere la probabilidad del par (grafo no dirigido)."""
@@ -90,7 +119,8 @@ class TestApiGraph(unittest.TestCase):
         self.assertEqual(res_direct.status_code, 200)
         self.assertEqual(res_inverse.status_code, 200)
         self.assertEqual(
-            res_direct.json()["prob_conflicto"], res_inverse.json()["prob_conflicto"]
+            res_direct.json()["conflict_probability"],
+            res_inverse.json()["conflict_probability"],
         )
 
     def test_get_conflict_pair_self_pair_rejected(self) -> None:
