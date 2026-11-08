@@ -1,18 +1,15 @@
 """Probabilidades de conflicto para TODOS los pares de materias (insumo del grafo).
 
-El modelo oficial (`results/models/knn_full_unweighted.joblib`) se entrenó con las 714
+El modelo oficial (`results/models/decision_tree_full_unweighted.joblib`) se entrenó con las 714
 materias de `ml_train_full.csv`. Para armar el grafo hacen falta los 319.600 pares de
-las 800 materias, y los pares de entrenamiento serían *in-sample* (con KNN, cada punto
-es su propio vecino, lo que infla las probabilidades).
+las 800 materias, y los pares de entrenamiento serían *in-sample*.
 
 Para que el cronograma se evalúe con predicciones honestas se ofrecen dos modos:
 - `oof`  (por defecto): validación cruzada por materia (GroupKFold-like). Cada par se
   predice con un modelo que NUNCA vio ninguna de sus dos materias. Hiperparámetros
-  clonados del `.joblib` oficial (no se modifica nada del módulo ML).
+  clonados del `.joblib` oficial.
 - `final`: usa el modelo oficial ya entrenado (es lo que se usaría para materias nuevas;
   los pares de train quedan in-sample).
-
-No reentrena ni toca `src/models`, `src/inference` ni `data/`.
 """
 
 from __future__ import annotations
@@ -112,5 +109,5 @@ def get_pair_probabilities(
 
 
 def default_threshold() -> float:
-    """Umbral calibrado en validación para el modelo oficial (0.21), desde metrics_summary.json."""
+    """Umbral calibrado en validación para el modelo oficial (0.20), desde metrics_summary.json."""
     return load_calibrated_threshold(DEFAULT_MODEL_NAME)

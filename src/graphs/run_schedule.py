@@ -1,8 +1,8 @@
 """Pipeline completo: ML -> grafo predicho -> coloreo -> evaluación contra lo real.
 
 Uso (desde la raíz del repo):
-    python -m src.graphs.run_schedule                 # umbral oficial (0.21), modo oof
-    python -m src.graphs.run_schedule --threshold 0.16 --strategy saturation_largest_first
+    python -m src.graphs.run_schedule                 # umbral oficial (0.20), modo oof
+    python -m src.graphs.run_schedule --threshold 0.15 --strategy saturation_largest_first
     python -m src.graphs.run_schedule --mode final --sweep
 
 Salidas en results/graphs/: schedule_<th>.json, threshold_sweep.csv, summary.json
@@ -26,15 +26,14 @@ from src.graphs.predicted_pairs import default_threshold, get_pair_probabilities
 
 OUT_DIR = PROJECT_ROOT / "results" / "graphs"
 EXAMS_CSV = PROJECT_ROOT / "data" / "interim" / "exams_clean.csv"
-# KNN(k=15) devuelve probabilidades múltiplos de 1/15 (k vecinos positivos de 15). Se barre
-# el punto medio (k-0.5)/15 para evitar errores de redondeo de punto flotante: equivale a
-# exigir al menos k vecinos positivos. El umbral oficial 0.21 equivale a k = 4.
-DEFAULT_SWEEP = [round((k - 0.5) / 15, 4) for k in range(1, 10)]
+# Barrido de umbrales para evaluar el tradeoff entre turnos y choques reales.
+# El umbral calibrado en validación para Decision Tree es 0.20.
+DEFAULT_SWEEP = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.40, 0.50]
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    ap.add_argument("--threshold", type=float, default=None, help="Umbral de prob_conflicto (default: calibrado, 0.21)")
+    ap.add_argument("--threshold", type=float, default=None, help="Umbral de prob_conflicto (default: calibrado, 0.20)")
     ap.add_argument("--strategy", default="largest_first")
     ap.add_argument("--mode", choices=["oof", "final"], default="oof")
     ap.add_argument("--sweep", action="store_true", help="Barrido de umbrales -> threshold_sweep.csv")
