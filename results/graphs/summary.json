@@ -1,0 +1,36 @@
+{
+  "modo_predicciones": "oof",
+  "threshold": 0.21,
+  "estrategia": "largest_first",
+  "coloreo_valido_en_grafo_predicho": true,
+  "evaluacion_vs_real": {
+    "turnos": 18,
+    "cabe_en_calendario": true,
+    "pares_reales": 4468,
+    "pares_reales_en_choque": 488,
+    "alumnos_choque_total": 28677,
+    "alumnos_en_choque": 2041,
+    "pct_alumnos_en_choque": 7.12,
+    "aristas_predichas": 4342,
+    "TP": 973,
+    "FP": 3369,
+    "FN": 3495,
+    "precision_aristas": 0.2241,
+    "recall_aristas": 0.2178
+  },
+  "referencia_oraculo": {
+    "turnos": 19,
+    "cabe_en_calendario": true,
+    "pares_reales": 4468,
+    "pares_reales_en_choque": 0,
+    "alumnos_choque_total": 28677,
+    "alumnos_en_choque": 0,
+    "pct_alumnos_en_choque": 0.0,
+    "aristas_predichas": 4468,
+    "TP": 4468,
+    "FP": 0,
+    "FN": 0,
+    "precision_aristas": 1.0,
+    "recall_aristas": 1.0
+  }
+}

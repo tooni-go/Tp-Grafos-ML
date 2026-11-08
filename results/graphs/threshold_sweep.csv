@@ -1,0 +1,10 @@
+threshold,estrategia,coloreo_valido_en_grafo_predicho,nodos,turnos,cabe_en_calendario,pares_reales,pares_reales_en_choque,alumnos_choque_total,alumnos_en_choque,pct_alumnos_en_choque,aristas_predichas,TP,FP,FN,precision_aristas,recall_aristas
+0.0333,largest_first,True,800,53,False,4468,89,28677,215,0.75,31715,2544,29171,1924,0.0802,0.5694
+0.1,largest_first,True,800,31,True,4468,204,28677,650,2.27,13925,1778,12147,2690,0.1277,0.3979
+0.1667,largest_first,True,800,25,True,4468,319,28677,1273,4.44,7595,1311,6284,3157,0.1726,0.2934
+0.2333,largest_first,True,800,18,True,4468,488,28677,2041,7.12,4342,973,3369,3495,0.2241,0.2178
+0.3,largest_first,True,800,9,True,4468,709,28677,3283,11.45,2529,726,1803,3742,0.2871,0.1625
+0.3667,largest_first,True,800,9,True,4468,1030,28677,5247,18.3,1338,562,776,3906,0.42,0.1258
+0.4333,largest_first,True,800,8,True,4468,1239,28677,6157,21.47,984,470,514,3998,0.4776,0.1052
+0.5,largest_first,True,800,7,True,4468,1569,28677,8029,28.0,731,392,339,4076,0.5363,0.0877
+0.5667,largest_first,True,800,6,True,4468,1821,28677,8510,29.68,501,334,167,4134,0.6667,0.0748

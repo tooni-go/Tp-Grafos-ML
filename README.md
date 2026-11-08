@@ -85,3 +85,16 @@ print(f"Aristas de incompatibilidad generadas: {len(aristas)}")
 - [`docs/fase_2_5_preparacion_ml.md`](file:///w:/home/anton/Tp-Grafos-ML/docs/fase_2_5_preparacion_ml.md): Partición estratificada por materias y prevención de *data leakage*.
 - [`docs/fase_3_entrenamiento_ml.md`](file:///w:/home/anton/Tp-Grafos-ML/docs/fase_3_entrenamiento_ml.md): Decisiones metodológicas, métricas, umbrales y especificación del módulo de inferencia.
 - [`notebooks/Test_modelo_ML.ipynb`](file:///w:/home/anton/Tp-Grafos-ML/notebooks/Test_modelo_ML.ipynb): Notebook interactivo de inspección y auditoría de reproducibilidad.
+
+---
+
+## 5. Grafo de conflictos y coloreo (`src/graphs/`)
+
+El cronograma se arma con las predicciones del modelo (no con los conflictos reales) y se evalúa contra lo real:
+
+```bash
+python -m src.graphs.run_schedule --sweep   # resultados en results/graphs/
+```
+
+Detalle y resultados en [`docs/fase_3_grafo_y_coloreo.md`](docs/fase_3_grafo_y_coloreo.md).
+

@@ -18,3 +18,6 @@ venv/
 *.joblib
 !results/models/knn_full_unweighted.joblib
 !results/models/.gitkeep
+
+# Caché de predicciones (regenerable)
+results/predictions/pair_probabilities_oof.csv
