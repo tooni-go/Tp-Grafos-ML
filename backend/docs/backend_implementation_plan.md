@@ -16,32 +16,35 @@ El backend de este proyecto actúa como el sistema coordinador para la predicci�
 ## 2. Estructura de Directorios
 
 ```
-src/
-├── api/
-│   ├── __init__.py
-│   ├── main.py                     # Punto de entrada FastAPI, lifespan y CORS
-│   └── v1/
-│       ├── __init__.py
-│       ├── router.py               # Agregador de routers v1
-│       └── endpoints/
-│           ├── __init__.py
-│           ├── health.py           # GET /health
-│           ├── catalog.py          # GET /exams, GET /exams/{id}, GET /departments
-│           ├── graph.py            # GET /graph, GET /conflicts/pair
-│           └── schedule.py         # POST /schedule, POST /schedule/evaluate
-├── core/
-│   ├── __init__.py
-│   └── config.py                   # Rutas canónicas, variables de entorno y defaults
-├── schemas/
-│   ├── __init__.py
-│   ├── catalog.py                  # Schemas de exámenes y departamentos
-│   ├── graph.py                    # Schemas de topología y pares
-│   └── schedule.py                 # Schemas de cronograma y evaluación
-└── services/
-    ├── __init__.py
-    ├── catalog_service.py          # Consultas optimizadas sobre exams_clean.csv
-    ├── graph_service.py            # Construcción y análisis topológico del grafo
-    └── schedule_service.py         # Coloreo y evaluación sobre conflict_graph.py
+backend/
+├── data/
+│   ├── interim/exams_clean.csv     # Catálogo oficial de 800 exámenes
+│   └── processed/subject_pairs_poc.csv # 319.600 pares de materias con datos históricos
+├── docs/                           # Documentación técnica específica del backend
+├── results/
+│   ├── graphs/                     # Salidas de coloreo y cronogramas de referencia
+│   ├── metrics/metrics_summary.json# Fuente única de verdad del umbral (0.20)
+│   ├── models/decision_tree_full_unweighted.joblib # Modelo oficial
+│   └── predictions/pair_probabilities_oof.csv # Probabilidades OOF cacheadas
+├── src/
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── main.py                 # Punto de entrada FastAPI, lifespan y CORS
+│   │   └── v1/
+│   │       ├── __init__.py
+│   │       ├── router.py           # Agregador de routers v1
+│   │       └── endpoints/
+│   │           ├── __init__.py
+│   │           ├── health.py       # GET /health
+│   │           ├── catalog.py      # GET /exams, GET /exams/{id}, GET /departments
+│   │           ├── graph.py        # GET /graph, GET /conflicts/pair
+│   │           └── schedule.py     # POST /schedule, POST /schedule/evaluate
+│   ├── common/                     # Esquema canónico y PROJECT_ROOT
+│   ├── core/                       # Configuración y variables de entorno
+│   ├── schemas/                    # Schemas Pydantic v2
+│   └── services/                   # Lógica de catálogo, grafo y cronograma
+├── tests/                          # Batería de 37 tests automatizados
+└── requirements.txt                # Dependencias de Python del backend
 ```
 
 ---
@@ -120,7 +123,8 @@ src/
 - [x] Conexión con `greedy_coloring`, `build_schedule` y `validate_coloring`.
 - [x] Endpoint `POST /api/v1/schedule` validando límite de 32 turnos y generando asignación disjunta (11 turnos a $\theta = 0.20$).
 - [x] Endpoint `GET /api/v1/schedule/strategies` exponiendo las 7 heurísticas soportadas.
-- [x] Tests automatizados en `tests/test_api_schedule.py`.
+- [x] Tests automatizados en `tests/test_api_schedule.py` (7 tests, incluyendo unicidad estricta de las 800 materias y cronogramas que exceden 32 turnos).
+- [x] Suite completa de 37 tests pasando al 100%.
 
 ### Etapa 4 — Evaluación y Cierre [SIGUIENTE INCREMENTO]
 - [ ] Conexión con `evaluate_against_real` sobre los pares de 1994.

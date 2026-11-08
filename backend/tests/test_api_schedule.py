@@ -56,6 +56,56 @@ class TestApiSchedule(unittest.TestCase):
             self.assertIn("department_code", first_exam)
             self.assertIn("duration_minutes", first_exam)
 
+    def test_schedule_ids_uniqueness_and_catalog_parity(self) -> None:
+        """Verifica que el cronograma contenga exactamente las 800 materias del catálogo sin duplicados."""
+        response = self.client.post(f"{settings.API_V1_STR}/schedule", json={})
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+        schedule = data.get("schedule", {})
+
+        all_scheduled_ids = [
+            exam["exam_id"]
+            for exams in schedule.values()
+            for exam in exams
+        ]
+
+        # 1. Total exacto de materias agendadas
+        self.assertEqual(len(all_scheduled_ids), 800)
+
+        # 2. Sin IDs duplicados entre turnos
+        unique_ids = set(all_scheduled_ids)
+        self.assertEqual(len(unique_ids), 800)
+
+        # 3. Exactamente el mismo conjunto de IDs del catálogo oficial
+        catalog_response = self.client.get(f"{settings.API_V1_STR}/exams?limit=1000")
+        self.assertEqual(catalog_response.status_code, 200)
+        catalog_ids = {exam["exam_id"] for exam in catalog_response.json()["items"]}
+        self.assertEqual(unique_ids, catalog_ids)
+
+    def test_schedule_exceeds_calendar_capacity(self) -> None:
+        """Verifica comportamiento cuando el cronograma supera el límite de 32 turnos (fits_in_calendar=false)."""
+        # A umbral muy exigente (0.0333), la alta cantidad de aristas demanda > 32 turnos
+        payload = {"threshold": 0.0333, "strategy": "largest_first"}
+        response = self.client.post(f"{settings.API_V1_STR}/schedule", json=payload)
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+        turns_count = data.get("turns_count")
+
+        # 1. Supera el calendario de 32 turnos
+        self.assertGreater(turns_count, 32)
+        self.assertEqual(data.get("max_allowed_turns"), 32)
+        self.assertFalse(data.get("fits_in_calendar"))
+
+        # 2. El coloreo sigue siendo formalmente válido sobre el grafo predicho
+        self.assertTrue(data.get("is_valid_coloring"))
+
+        # 3. No se trunca silenciosamente para forzar 32 turnos
+        schedule = data.get("schedule", {})
+        self.assertEqual(len(schedule), turns_count)
+        self.assertEqual(data.get("total_exams_scheduled"), 800)
+
     def test_generate_schedule_custom_strategy(self) -> None:
         """Verifica coloreo con la heurística DSATUR (saturation_largest_first)."""
         payload = {"strategy": "saturation_largest_first", "threshold": 0.20}
