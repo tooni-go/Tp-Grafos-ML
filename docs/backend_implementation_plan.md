@@ -6,13 +6,14 @@ El backend de este proyecto actúa como el sistema coordinador para la predicci�
 
 ### Principios Arquitectónicos
 1. **Desacoplamiento Estricto:** La API web no reimplementa ni modifica los algoritmos de Machine Learning (`src/inference/`, `src/models/`) ni de Grafos y Coloreo (`src/graphs/`). Consume sus interfaces públicas.
-2. **Eficiencia en Runtime:** El backend no reentrena modelos ni recalcula validaciones cruzadas (OOF) en peticiones HTTP. Los artefactos computacionalmente pesados se precalculan offline y se consumen en memoria durante el ciclo de vida del servidor (*lifespan*).
+2. **Eficiencia en Runtime:** El backend no reentrena modelos ni recalcula validaciones cruzadas (OOF) en peticiones HTTP. Los artefactos pesados se precargan en memoria durante el ciclo de vida del servidor (*lifespan*).
 3. **Contratos Tipados:** Toda entrada y salida HTTP se valida mediante esquemas estrictos de Pydantic v2.
 4. **Transporte Estándar:** Comunicación exclusiva vía HTTP + JSON, compatible con cualquier frontend SPA (React, Vue, etc.).
+5. **Modelo Oficial en Producción:** `DecisionTree_Full_Unweighted` (`results/models/decision_tree_full_unweighted.joblib`) con umbral calibrado en validación de **`0.20`** (leído dinámicamente desde `results/metrics/metrics_summary.json`).
 
 ---
 
-## 2. Estructura de Directorios Prevista
+## 2. Estructura de Directorios
 
 ```
 src/
@@ -26,7 +27,7 @@ src/
 │           ├── __init__.py
 │           ├── health.py           # GET /health
 │           ├── catalog.py          # GET /exams, GET /exams/{id}, GET /departments
-│           ├── graph.py            # POST /graph, GET /conflicts/pair
+│           ├── graph.py            # GET /graph, GET /conflicts/pair
 │           └── schedule.py         # POST /schedule, POST /schedule/evaluate
 ├── core/
 │   ├── __init__.py
@@ -39,7 +40,8 @@ src/
 └── services/
     ├── __init__.py
     ├── catalog_service.py          # Consultas optimizadas sobre exams_clean.csv
-    └── schedule_service.py         # Orquestación sobre conflict_graph.py
+    ├── graph_service.py            # Construcción y análisis topológico del grafo
+    └── schedule_service.py         # Coloreo y evaluación sobre conflict_graph.py
 ```
 
 ---
@@ -48,45 +50,29 @@ src/
 
 - **Catálogo de Exámenes:** Consumo directo de `data/interim/exams_clean.csv` mediante la función [`load_exams_catalog(path)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L34-L45).
 - **Probabilidades de Conflicto:** Consumo de la matriz OOF precalculada (`results/predictions/pair_probabilities_oof.csv`) cargada en memoria.
-- **Construcción del Grafo:** Invocación de [`build_conflict_graph_from_predictions(pred_df, threshold, catalog)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L56-L71).
+- **Construcción del Grafo:** Invocación de [`build_conflict_graph_from_predictions(pred_df, threshold, catalog)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L56-L71). En umbral `0.20`, genera **2.032 aristas** sobre los 800 exámenes.
 - **Asignación de Turnos (Coloreo):** Invocación de [`greedy_coloring(G, strategy)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L87-L93) y estructuración con [`build_schedule(coloring, catalog)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L99-L112).
 - **Validación del Coloreo:** Invocación de [`validate_coloring(G, coloring)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L114-L123).
 - **Evaluación vs. Ground Truth:** Invocación de [`evaluate_against_real(coloring, real_pairs_df, G)`](file:///w:/home/anton/Tp-Grafos-ML/src/graphs/conflict_graph.py#L125-L163).
 
 ---
 
-## 4. Endpoints Previstos
+## 4. Endpoints del Sistema
 
-| Método | Ruta | Parámetros (Query / Body) | Respuestas | Errores Posibles |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/health` | Ninguno | `200 OK`: Estado, versión, catálogo cargado | 500 |
-| `GET` | `/api/v1/exams` | `department_code`, `search`, `limit`, `offset` | `200 OK`: Total y lista paginada de exámenes | 422 |
-| `GET` | `/api/v1/exams/{exam_id}` | Path: `exam_id` | `200 OK`: Detalle de la materia | 404 |
-| `GET` | `/api/v1/departments` | Ninguno | `200 OK`: Lista de departamentos y cantidad de exámenes | 500 |
-| `GET` | `/api/v1/conflicts/pair` | Query: `exam_id_1`, `exam_id_2` | `200 OK`: Probabilidad y predicción del par | 400, 404, 422 |
-| `POST` | `/api/v1/graph` | Body: `threshold`, `include_isolated_nodes` | `200 OK`: Nodos, aristas activas, métricas topológicas | 400, 422 |
-| `POST` | `/api/v1/schedule` | Body: `threshold`, `strategy` | `200 OK`: Cantidad de turnos, verificación $\le 32$, agenda | 400, 422 |
-| `POST` | `/api/v1/schedule/evaluate` | Body: `threshold`, `strategy` | `200 OK`: Métricas vs 1994 (choques, alumnos afectados, TP/FP/FN) | 400, 422 |
-
----
-
-## 5. Datos y Dependencias Requeridas
-
-### Dependencias de Python
-- `fastapi>=0.110.0`
-- `uvicorn[standard]>=0.28.0`
-- `pydantic>=2.6.0`
-- `httpx>=0.27.0` (testing)
-- Existentes: `networkx>=3.2`, `pandas>=2.2.0`, `scikit-learn==1.9.1`, `joblib>=1.3.0`
-
-### Artefactos de Datos
-- `data/interim/exams_clean.csv` (Catálogo de 800 exámenes).
-- `data/processed/subject_pairs_poc.csv` (Datos de evaluación histórica).
-- `results/predictions/pair_probabilities_oof.csv` (Probabilidades precalculadas).
+| Método | Ruta | Parámetros (Query / Body) | Respuestas | Errores Posibles | Estado |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/health` | Ninguno | `200 OK`: Estado, versión, catálogo cargado | 500 | **Implementado** |
+| `GET` | `/api/v1/exams` | `department_code`, `search`, `limit`, `offset` | `200 OK`: Total y lista paginada de exámenes | 422 | **Implementado** |
+| `GET` | `/api/v1/exams/{exam_id}` | Path: `exam_id` | `200 OK`: Detalle de la materia | 404 | **Implementado** |
+| `GET` | `/api/v1/departments` | Ninguno | `200 OK`: Lista de departamentos y cantidad de exámenes | 500 | **Implementado** |
+| `GET` | `/api/v1/graph` | Query: `threshold`, `include_edges` | `200 OK`: Nodos, aristas activas, métricas topológicas | 400, 422 | *Etapa 2* |
+| `GET` | `/api/v1/conflicts/pair` | Query: `exam_id_1`, `exam_id_2`, `threshold` | `200 OK`: Probabilidad y predicción del par | 400, 404, 422 | *Etapa 2* |
+| `POST` | `/api/v1/schedule` | Body: `threshold`, `strategy` | `200 OK`: Cantidad de turnos, verificación $\le 32$, agenda | 400, 422 | *Etapa 3* |
+| `POST` | `/api/v1/schedule/evaluate` | Body: `threshold`, `strategy` | `200 OK`: Métricas vs 1994 (choques, alumnos afectados, TP/FP/FN) | 400, 422 | *Etapa 4* |
 
 ---
 
-## 6. Protocolo de Inicio desde Clonación Limpia
+## 5. Protocolo de Inicio desde Clonación Limpia
 
 1. **Crear y activar entorno virtual:**
    ```bash
@@ -97,35 +83,45 @@ src/
    ```bash
    pip install -r requirements.txt
    ```
-3. **Asegurar la caché de probabilidades:**
+3. **Asegurar la caché de probabilidades OOF:**
    ```bash
-   python -c "from src.graphs.predicted_pairs import get_pair_probabilities; get_pair_probabilities(mode='oof')"
+   python -m src.graphs.run_schedule --force
    ```
 4. **Iniciar el servidor de desarrollo:**
    ```bash
    uvicorn src.api.main:app --reload --port 8000
    ```
+5. **Ejecutar tests:**
+   ```bash
+   python -m unittest discover -s tests -v
+   ```
 
 ---
 
-## 7. Fases de Desarrollo Planificadas
+## 6. Etapas de Desarrollo y Criterios de Aceptación
 
-### Etapa 1 — Infraestructura y Catálogo (En Curso)
-- **Incremento 1 (Actual):** Estructura base FastAPI, configuración (`core/config.py`), router v1, endpoint `/health`, dependencias en `requirements.txt` y primer test de API.
-- **Incremento 2:** Schemas Pydantic del catálogo, carga en `lifespan`, servicio de catálogo y endpoints de consulta (`/exams`, `/exams/{id}`, `/departments`) con tests.
+### Etapa 1 — Infraestructura y Catálogo [COMPLETADA]
+- [x] Estructura base FastAPI, configuración (`core/config.py`), router v1, endpoint `/health`.
+- [x] Lifespan para cargar los 800 exámenes en `app.state.catalog`.
+- [x] Schemas Pydantic v2 `ExamOut`, `ExamListResponse`, `DepartmentOut`.
+- [x] Endpoints `GET /exams`, `GET /exams/{id}`, `GET /departments`.
+- [x] 23 tests automatizados pasando al 100%.
 
-### Etapa 2 — Integración del Grafo
-- Carga de probabilidades OOF precalculadas en el `lifespan`.
-- Servicio de grafos conectando `build_conflict_graph_from_predictions`.
-- Endpoint `POST /api/v1/graph` y `GET /api/v1/conflicts/pair`.
-- Tests de integración de grafo.
+### Etapa 2 — Integración del Grafo [SIGUIENTE INCREMENTO]
+- [ ] Precarga de `results/predictions/pair_probabilities_oof.csv` en `app.state.probabilities_df` e indexación de pares para búsqueda instantánea en `app.state.pairs_prob_map`.
+- [ ] Schemas Pydantic v2 en `src/schemas/graph.py` (`GraphEdgeOut`, `GraphResponse`, `ConflictPairResponse`).
+- [ ] Servicio `src/services/graph_service.py` (`build_graph_for_threshold`, `get_graph_statistics`, `get_pair_conflict`).
+- [ ] Endpoints en `src/api/v1/endpoints/graph.py`:
+  - `GET /api/v1/graph`: Construye el subgrafo predicho para el umbral solicitado (default: `0.20`), computa densidad, componentes conexas, nodos aislados y lista de aristas.
+  - `GET /api/v1/conflicts/pair`: Consulta directa de la probabilidad entre dos materias del catálogo con validación de auto-pares (400) e IDs inexistentes (404).
+- [ ] Tests automatizados en `tests/test_api_graph.py`.
 
 ### Etapa 3 — Generación de Cronogramas
-- Conexión con `greedy_coloring`, `build_schedule` y `validate_coloring`.
-- Endpoint `POST /api/v1/schedule` validando límite de 32 turnos.
-- Tests de validación de coloraciones disjuntas.
+- [ ] Conexión con `greedy_coloring`, `build_schedule` y `validate_coloring`.
+- [ ] Endpoint `POST /api/v1/schedule` validando límite de 32 turnos.
+- [ ] Tests de validación de coloraciones disjuntas y estrategias.
 
 ### Etapa 4 — Evaluación y Cierre
-- Conexión con `evaluate_against_real` sobre los pares de 1994.
-- Endpoint `POST /api/v1/schedule/evaluate`.
-- Tests de integración punta a punta y documentación de consumo final.
+- [ ] Conexión con `evaluate_against_real` sobre los pares de 1994.
+- [ ] Endpoint `POST /api/v1/schedule/evaluate`.
+- [ ] Tests de integración punta a punta y documentación final.
