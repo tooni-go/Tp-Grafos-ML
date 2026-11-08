@@ -102,6 +102,7 @@ function toGraph(raw: unknown): GraphData {
       from: String(pick(e, 'from', 'source', 'u')),
       to: String(pick(e, 'to', 'target', 'v')),
       prob: num(pick(e, 'prob', 'probability', 'weight', 'p')),
+      weight: num(pick(e, 'weight', 'prob', 'probability', 'p')),
       factors: Array.isArray(f) ? f.map(String) : undefined,
     }
   })

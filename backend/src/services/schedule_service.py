@@ -24,6 +24,11 @@ STRATEGY_METADATA: List[Dict[str, str]] = [
         "description": "Ordena los vértices por grado descendente. Colorea primero las materias con mayor número de conflictos.",
     },
     {
+        "strategy": "weighted_largest_first",
+        "name": "Welsh-Powell Ponderado (Weighted Largest First)",
+        "description": "Ordena los vértices por suma de pesos de incidentes (grado ponderado). Colorea primero las materias con mayor conflicto acumulado.",
+    },
+    {
         "strategy": "saturation_largest_first",
         "name": "DSATUR (Saturation Largest First)",
         "description": "Heurística de grado de saturación de Brélaz. Selecciona dinámicamente el vértice con más colores vecinos distintos.",

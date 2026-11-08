@@ -133,18 +133,30 @@ class TestApiSchedule(unittest.TestCase):
             self.assertEqual(response.status_code, 422)
 
     def test_get_available_strategies(self) -> None:
-        """Verifica que /schedule/strategies liste las 7 heurísticas soportadas."""
+        """Verifica que /schedule/strategies liste las 8 heurísticas soportadas."""
         response = self.client.get(f"{settings.API_V1_STR}/schedule/strategies")
         self.assertEqual(response.status_code, 200)
 
         strategies = response.json()
         self.assertIsInstance(strategies, list)
-        self.assertEqual(len(strategies), 7)
+        self.assertEqual(len(strategies), 8)
 
         strategy_keys = {item["strategy"] for item in strategies}
         self.assertIn("largest_first", strategy_keys)
+        self.assertIn("weighted_largest_first", strategy_keys)
         self.assertIn("saturation_largest_first", strategy_keys)
         self.assertIn("smallest_last", strategy_keys)
+
+    def test_evaluate_schedule_weighted_strategy(self) -> None:
+        """Verifica evaluación con heurística Welsh-Powell ponderada (weighted_largest_first)."""
+        payload = {"strategy": "weighted_largest_first", "threshold": 0.20}
+        response = self.client.post(f"{settings.API_V1_STR}/schedule/evaluate", json=payload)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data.get("strategy"), "weighted_largest_first")
+        self.assertEqual(data.get("turns_count"), 11)
+        self.assertTrue(data.get("fits_in_calendar"))
+        self.assertTrue(data.get("is_valid_coloring"))
 
     def test_evaluate_schedule_default(self) -> None:
         """Verifica evaluación del cronograma oficial (0.20, largest_first) contra la realidad de 1994."""

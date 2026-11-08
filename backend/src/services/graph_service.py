@@ -15,7 +15,7 @@ def build_graph_for_threshold(
     threshold: float,
     catalog: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> nx.Graph:
-    """Construye el grafo NetworkX no dirigido a partir de probabilidades y umbral."""
+    """Construye el grafo NetworkX no dirigido con pesos a partir de probabilidades y umbral."""
     return build_conflict_graph_from_predictions(
         pred_df=pred_df,
         threshold=threshold,
@@ -30,7 +30,7 @@ def get_graph_statistics(
     include_edges: bool = True,
     prob_col: str = "prob_conflicto",
 ) -> Dict[str, Any]:
-    """Calcula las métricas topológicas del grafo y extrae sus aristas activas."""
+    """Calcula las métricas topológicas del grafo y extrae sus aristas activas con pesos."""
     num_nodes = G.number_of_nodes()
     num_edges = G.number_of_edges()
     density = round(float(nx.density(G)), 6) if num_nodes > 1 else 0.0
@@ -46,6 +46,7 @@ def get_graph_statistics(
                 "source": row[0],
                 "target": row[1],
                 "probability": round(float(row[2]), 4),
+                "weight": round(float(row[2]), 4),
             }
             for row in filtered.itertuples(index=False, name=None)
         ]
