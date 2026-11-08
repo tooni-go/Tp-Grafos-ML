@@ -1,12 +1,11 @@
 """Grafo de conflictos y coloreo para asignar turnos de examen (Fase 4: integración con ML).
 
-Cambio respecto de la versión previa: las aristas ya NO salen de los conflictos reales de
-1994 (`cant_estudiantes_afectados`), sino de la probabilidad predicha por el modelo
-(`prob_conflicto`). Los conflictos reales se usan solo para EVALUAR el cronograma
-(`evaluate_against_real`) y como referencia (grafo oráculo).
-
-El grafo sigue siendo no dirigido y sin pesos: la arista {u, v} existe si
-`prob_conflicto >= threshold` (misma regla `>=` que `src/inference`).
+Las aristas se construyen a partir de la probabilidad predicha por el modelo (prob_conflicto).
+El grafo es no dirigido y con pesos en las aristas:
+- En el grafo predicho, cada arista {u, v} existe si `prob_conflicto >= threshold` y tiene
+  un peso asignado igual a la probabilidad predicha: weight = round(prob_conflicto, 4).
+- En el grafo real (oráculo), cada arista tiene un peso asignado igual a la cantidad de
+  estudiantes afectados: weight = cant_estudiantes_afectados.
 """
 
 from __future__ import annotations
@@ -22,6 +21,7 @@ TURNOS_CALENDARIO = 32  # turnos disponibles en el calendario de Nottingham (2 s
 
 VALID_STRATEGIES = {
     "largest_first",  # Welsh-Powell
+    "weighted_largest_first",  # Welsh-Powell ponderado
     "smallest_last",
     "saturation_largest_first",  # DSATUR
     "independent_set",
@@ -59,15 +59,18 @@ def build_conflict_graph_from_predictions(
     exams_catalog: Optional[Dict[str, Dict[str, Any]]] = None,
     prob_col: str = "prob_conflicto",
 ) -> nx.Graph:
-    """Grafo predicho: arista {u, v} si `prob_conflicto >= threshold`. Sin pesos."""
+    """Grafo predicho ponderado: arista {u, v} si `prob_conflicto >= threshold`, con peso = `prob_conflicto`."""
     if not (0.0 < float(threshold) < 1.0):
         raise ValueError(f"threshold debe estar en (0, 1); se recibió {threshold!r}")
     for col in ("materia_id_1", "materia_id_2", prob_col):
         if col not in pred_df.columns:
             raise ValueError(f"Falta la columna requerida '{col}'.")
     G = _init_graph(exams_catalog)
-    edges = pred_df.loc[pred_df[prob_col] >= threshold, ["materia_id_1", "materia_id_2"]]
-    G.add_edges_from(edges.itertuples(index=False, name=None))
+    mask = pred_df[prob_col] >= threshold
+    filtered = pred_df.loc[mask, ["materia_id_1", "materia_id_2", prob_col]]
+    for u, v, p in filtered.itertuples(index=False, name=None):
+        prob_val = round(float(p), 4)
+        G.add_edge(u, v, weight=prob_val, probability=prob_val)
     return G
 
 
@@ -76,17 +79,26 @@ def build_real_graph(
     exams_catalog: Optional[Dict[str, Dict[str, Any]]] = None,
     min_students: int = 1,
 ) -> nx.Graph:
-    """Grafo ORÁCULO con conflictos reales (cohorte 1994). Solo para referencia/evaluación."""
+    """Grafo ORÁCULO con conflictos reales (cohorte 1994). Aristas ponderadas con cant_estudiantes_afectados."""
     G = _init_graph(exams_catalog)
-    e = pairs_df.loc[pairs_df["cant_estudiantes_afectados"] >= min_students,
-                     ["materia_id_1", "materia_id_2"]]
-    G.add_edges_from(e.itertuples(index=False, name=None))
+    mask = pairs_df["cant_estudiantes_afectados"] >= min_students
+    filtered = pairs_df.loc[mask, ["materia_id_1", "materia_id_2", "cant_estudiantes_afectados"]]
+    for u, v, w in filtered.itertuples(index=False, name=None):
+        G.add_edge(u, v, weight=int(w), students=int(w))
     return G
+
+
+def strategy_weighted_largest_first(G: nx.Graph, colors: Dict[str, int]) -> Iterable[str]:
+    """Ordena los vértices según su grado ponderado (fuerza del nodo, suma de pesos de aristas incidentes)."""
+    weighted_degrees = dict(G.degree(weight="weight"))
+    return sorted(G, key=lambda n: (weighted_degrees.get(n, 0.0), G.degree[n]), reverse=True)
 
 
 def greedy_coloring(G: nx.Graph, strategy: str = "largest_first") -> Dict[str, int]:
     if len(G) == 0:
         return {}
+    if strategy == "weighted_largest_first":
+        return nx.coloring.greedy_color(G, strategy=strategy_weighted_largest_first)
     if strategy not in VALID_STRATEGIES:
         strategy = "largest_first"
     return nx.coloring.greedy_color(G, strategy=strategy)
@@ -232,7 +244,7 @@ def sweep_thresholds(
     exams_catalog: Optional[Dict[str, Dict[str, Any]]] = None,
     strategy: str = "largest_first",
 ) -> pd.DataFrame:
-    """Para cada umbral: arma grafo, colorea y evalúa contra lo real."""
+    """Para cada umbral: arma grafo ponderado, colorea y evalúa contra lo real."""
     rows = []
     for th in thresholds:
         G = build_conflict_graph_from_predictions(pred_df, th, exams_catalog)

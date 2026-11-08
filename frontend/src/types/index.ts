@@ -41,6 +41,8 @@ export interface GraphEdge {
   to: string
   /** Probabilidad de conflicto predicha por el modelo (opcional) */
   prob?: number
+  /** Peso de la arista (intensidad de conflicto o probabilidad) */
+  weight?: number
   /** Factores curriculares que explican la arista (opcional) */
   factors?: string[]
 }

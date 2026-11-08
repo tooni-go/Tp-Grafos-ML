@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -13,6 +13,7 @@ class GraphEdgeOut(BaseModel):
     source: str = Field(..., description="ID de la primera materia", examples=["ACC1"])
     target: str = Field(..., description="ID de la segunda materia", examples=["MAT101"])
     probability: float = Field(..., description="Probabilidad de conflicto predicha por el modelo", examples=[0.75])
+    weight: Optional[float] = Field(None, description="Peso asignado a la arista (probabilidad o intensidad de conflicto)", examples=[0.75])
 
 
 class GraphResponse(BaseModel):

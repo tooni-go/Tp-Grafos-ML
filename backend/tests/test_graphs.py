@@ -32,10 +32,18 @@ def _real():
 
 
 class TestGraphs(unittest.TestCase):
-    def test_threshold_es_inclusivo_y_sin_pesos(self):
+    def test_threshold_es_inclusivo_y_con_pesos(self):
         G = build_conflict_graph_from_predictions(_pred(), 0.5)
         self.assertEqual({frozenset(e) for e in G.edges()}, {frozenset("AB"), frozenset("AC")})
-        self.assertTrue(all(not d for _, _, d in G.edges(data=True)))
+        self.assertTrue(all("weight" in d for _, _, d in G.edges(data=True)))
+        self.assertEqual(G["A"]["B"]["weight"], 0.9)
+        self.assertEqual(G["A"]["C"]["weight"], 0.5)
+
+    def test_coloreo_estrategias(self):
+        G = build_conflict_graph_from_predictions(_pred(), 0.2)
+        for strategy in ("largest_first", "weighted_largest_first", "random_sequential", "smallest_last"):
+            c = greedy_coloring(G, strategy=strategy)
+            self.assertTrue(validate_coloring(G, c)[0])
 
     def test_threshold_invalido(self):
         for bad in (0.0, 1.0, -1, 2):
