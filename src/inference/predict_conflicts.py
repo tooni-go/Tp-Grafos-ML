@@ -3,12 +3,11 @@
 Este módulo provee una interfaz pública, autocontenida y desacoplada del script de
 entrenamiento para ejecutar inferencia con el modelo seleccionado en la Fase 3:
 - Esquema compartido: importado exclusivamente desde `src.common.schema`.
-- Modelo: `KNN_Full_Unweighted` (`results/models/knn_full_unweighted.joblib`), que
-  encapsula en un `sklearn.pipeline.Pipeline` tanto el `StandardScaler` ajustado en
-  entrenamiento como el `KNeighborsClassifier(n_neighbors=15, weights='uniform')`.
-- Umbral de decisión: `0.21`, leído desde la fuente única de verdad
+- Modelo: `DecisionTree_Full_Unweighted` (`results/models/decision_tree_full_unweighted.joblib`),
+  un `DecisionTreeClassifier(max_depth=5, random_state=42)`.
+- Umbral de decisión: `0.20`, leído desde la fuente única de verdad
   `results/metrics/metrics_summary.json` (`calibrated_thresholds_from_validation`).
-- Regla de decisión: `predict_proba(X)[:, 1] >= 0.21` (nunca se utiliza `model.predict(X)`,
+- Regla de decisión: `predict_proba(X)[:, 1] >= 0.20` (nunca se utiliza `model.predict(X)`,
   dado que `predict()` aplica por defecto el umbral `0.50`).
 """
 
@@ -33,8 +32,8 @@ from src.common.schema import (
     parse_strict_binary_column,
 )
 
-DEFAULT_MODEL_NAME: str = "KNN_Full_Unweighted"
-DEFAULT_MODEL_PATH: Path = RESULTS_MODELS_DIR / "knn_full_unweighted.joblib"
+DEFAULT_MODEL_NAME: str = "DecisionTree_Full_Unweighted"
+DEFAULT_MODEL_PATH: Path = RESULTS_MODELS_DIR / "decision_tree_full_unweighted.joblib"
 DEFAULT_METRICS_SUMMARY_PATH: Path = RESULTS_METRICS_DIR / "metrics_summary.json"
 
 PROBABILITY_COLUMN: str = "prob_conflicto"
@@ -115,13 +114,21 @@ def _validate_loaded_model(model: Any, source_desc: str) -> Any:
 
 
 def load_conflict_model(model_path: Path | str = DEFAULT_MODEL_PATH) -> Any:
-    """Carga y valida el pipeline entrenado (`.joblib`) desde disco."""
+    """Carga y valida el estimador entrenado (`.joblib`) desde disco."""
     path = Path(model_path)
     if not path.exists() or not path.is_file():
-        raise FileNotFoundError(
-            f"No se encontró el archivo del modelo entrenado en: {path}. "
-            "Verifique que el artefacto .joblib esté disponible en results/models/."
+        alt_name = (
+            "decisiontree_full_unweighted.joblib"
+            if path.name == "decision_tree_full_unweighted.joblib"
+            else "decision_tree_full_unweighted.joblib"
         )
+        if (path.parent / alt_name).is_file():
+            path = path.parent / alt_name
+        else:
+            raise FileNotFoundError(
+                f"No se encontró el archivo del modelo entrenado en: {path}. "
+                "Verifique que el artefacto .joblib esté disponible en results/models/."
+            )
 
     try:
         model = joblib.load(path)
@@ -296,14 +303,14 @@ def predict_conflict_pairs(
     model : estimador opcional
         Pipeline ya cargado en memoria. Si es `None`, se carga desde `model_path`.
     model_path : Path | str
-        Ruta al archivo `.joblib` (por defecto `results/models/knn_full_unweighted.joblib`).
+        Ruta al archivo `.joblib` (por defecto `results/models/decision_tree_full_unweighted.joblib`).
     threshold : float | None
-        Umbral de decisión en `(0, 1)`. Si es `None`, se carga el umbral oficial (`0.21`)
+        Umbral de decisión en `(0, 1)`. Si es `None`, se carga el umbral oficial (`0.20`)
         desde `results/metrics/metrics_summary.json`.
     metrics_summary_path : Path | str
         Ruta al archivo `metrics_summary.json` de donde se lee el umbral por defecto.
     model_name : str
-        Clave del modelo dentro de `calibrated_thresholds_from_validation` (`KNN_Full_Unweighted`).
+        Clave del modelo dentro de `calibrated_thresholds_from_validation` (`DecisionTree_Full_Unweighted`).
     require_ids : bool
         Si es `True` (por defecto), exige y conserva `materia_id_1` y `materia_id_2`.
     include_features : bool

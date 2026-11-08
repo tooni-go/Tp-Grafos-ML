@@ -26,6 +26,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
+from sklearn.tree import DecisionTreeClassifier
 
 from src.common.schema import (
     FEATURE_COLUMNS as SCHEMA_FEATURE_COLUMNS,
@@ -91,17 +92,15 @@ class TestConflictInference(unittest.TestCase):
         )
 
     def test_01_load_model_and_threshold_ssot(self) -> None:
-        """Verifica que el modelo .joblib y el umbral 0.21 se carguen correctamente."""
-        self.assertIsInstance(self.model, Pipeline)
-        self.assertIn("scaler", self.model.named_steps)
-        self.assertIn("clf", self.model.named_steps)
+        """Verifica que el modelo .joblib y el umbral 0.20 se carguen correctamente."""
+        self.assertIsInstance(self.model, (DecisionTreeClassifier, Pipeline))
         self.assertEqual(list(self.model.feature_names_in_), FEATURE_COLUMNS)
         self.assertEqual(len(FEATURE_COLUMNS), 10)
         self.assertIs(FEATURE_COLUMNS, SCHEMA_FEATURE_COLUMNS)
         self.assertIs(ID_COLUMNS, SCHEMA_ID_COLUMNS)
 
         th = load_calibrated_threshold(DEFAULT_MODEL_NAME, DEFAULT_METRICS_SUMMARY_PATH)
-        self.assertAlmostEqual(th, 0.21, places=6)
+        self.assertAlmostEqual(th, 0.20, places=6)
 
     def test_02_missing_or_corrupt_files_handling(self) -> None:
         """Verifica el manejo de errores ante rutas inexistentes o JSON malformado."""
@@ -131,12 +130,12 @@ class TestConflictInference(unittest.TestCase):
             )
             with self.assertRaises(KeyError):
                 load_calibrated_threshold(
-                    model_name="KNN_Full_Unweighted",
+                    model_name="DecisionTree_Full_Unweighted",
                     metrics_summary_path=missing_model_path,
                 )
 
     def test_03_probabilities_and_threshold_application(self) -> None:
-        """Verifica que las probabilidades sean múltiplos de 1/15 y se aplique el umbral 0.21."""
+        """Verifica que las probabilidades estén en [0, 1] y se aplique el umbral 0.20."""
         result = predict_conflict_pairs(self.sample_df, model=self.model)
 
         self.assertEqual(len(result), len(self.sample_df))
@@ -148,16 +147,13 @@ class TestConflictInference(unittest.TestCase):
         probs = result[PROBABILITY_COLUMN].to_numpy()
         preds = result[PREDICTION_COLUMN].to_numpy()
 
-        # Probabilidades dentro de [0, 1] y múltiplos exactos de 1/15 (K=15 uniforme)
         self.assertTrue(np.all((probs >= 0.0) & (probs <= 1.0)))
-        scaled_15 = np.round(probs * 15, 6)
-        self.assertTrue(np.all(np.isclose(scaled_15, np.round(scaled_15))))
 
-        # El primer par tiene baja probabilidad (< 0.21 -> 0) y el segundo alta (>= 0.21 -> 1)
+        # El primer par tiene baja probabilidad (< 0.20 -> 0) y el segundo alta (>= 0.20 -> 1)
         self.assertEqual(preds[0], 0)
         self.assertEqual(preds[1], 1)
         self.assertTrue(
-            np.array_equal(preds, (probs >= 0.21).astype(int))
+            np.array_equal(preds, (probs >= 0.20).astype(int))
         )
 
     def test_04_column_reordering_and_input_immutability(self) -> None:
@@ -293,21 +289,21 @@ class TestConflictInference(unittest.TestCase):
 
         out = predict_conflict_pairs(df_test, model=self.model)
 
-        # Coincidencia 100% en las 65.059 filas (IDs y clasificación binaria con umbral 0.21)
+        # Coincidencia 100% en las 65.059 filas (IDs y clasificación binaria con umbral 0.20)
         self.assertEqual(len(out), 65059)
         self.assertTrue((out["materia_id_1"] == df_official["materia_id_1"]).all())
         self.assertTrue((out["materia_id_2"] == df_official["materia_id_2"]).all())
         self.assertTrue(
             np.array_equal(
                 out[PREDICTION_COLUMN].to_numpy(),
-                df_official["pred_KNN_Full_Unweighted_thVal"].to_numpy(),
+                df_official["pred_DecisionTree_Full_Unweighted_thVal"].to_numpy(),
             )
         )
         # Coincidencia de probabilidades en las 65.059 filas (el CSV oficial redondea a 6 decimales)
         max_diff = np.max(
             np.abs(
                 out[PROBABILITY_COLUMN].to_numpy()
-                - df_official["prob_KNN_Full_Unweighted"].to_numpy()
+                - df_official["prob_DecisionTree_Full_Unweighted"].to_numpy()
             )
         )
         self.assertLessEqual(max_diff, 5e-7)

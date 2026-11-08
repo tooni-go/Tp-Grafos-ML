@@ -18,9 +18,9 @@ python3 -m venv venv
 ## 2. Cómo consumir el Módulo de Inferencia (`src/inference/`)
 
 El módulo [`src/inference/predict_conflicts.py`](file:///w:/home/anton/Tp-Grafos-ML/src/inference/predict_conflicts.py) expone la función pública `predict_conflict_pairs()`, que encapsula:
-- La carga del modelo candidato **`KNN_Full_Unweighted`** desde `results/models/knn_full_unweighted.joblib` (un `Pipeline` que ya incluye su propio `StandardScaler` y `KNeighborsClassifier(n_neighbors=15)`).
-- La lectura del umbral validado **`0.21`** desde `results/metrics/metrics_summary.json`.
-- El cálculo de probabilidades mediante `model.predict_proba(X)[:, 1]` y la aplicación explícita del corte `prob_conflicto >= 0.21` (nunca utiliza `model.predict(X)`).
+- La carga del modelo candidato **`DecisionTree_Full_Unweighted`** desde `results/models/decision_tree_full_unweighted.joblib` (`DecisionTreeClassifier(max_depth=5, random_state=42)`).
+- La lectura del umbral validado **`0.20`** desde `results/metrics/metrics_summary.json`.
+- El cálculo de probabilidades mediante `model.predict_proba(X)[:, 1]` y la aplicación explícita del corte `prob_conflicto >= 0.20` (nunca utiliza `model.predict(X)`).
 
 ### Columnas requeridas en el `DataFrame` de entrada
 - **Identificadores del par (`ID_COLUMNS`):** `materia_id_1`, `materia_id_2`.
@@ -50,7 +50,7 @@ pares_df = pd.read_csv("data/processed/ml_test_full.csv")
 # 2. (Opcional) Cargar el modelo una vez en memoria
 modelo = load_conflict_model()
 
-# 3. Obtener probabilidades y clasificación binaria (umbral por defecto = 0.21)
+# 3. Obtener probabilidades y clasificación binaria (umbral por defecto = 0.20)
 predicciones_df = predict_conflict_pairs(pares_df, model=modelo)
 
 # 4. Extraer los pares con conflicto predicho (pred_conflicto == 1) como aristas del grafo
@@ -67,7 +67,7 @@ print(f"Aristas de incompatibilidad generadas: {len(aristas)}")
 `predict_conflict_pairs()` retorna un `pandas.DataFrame` con:
 - `materia_id_1`, `materia_id_2`: identificadores de las dos materias del par $(u, v)$.
 - `prob_conflicto`: probabilidad estimada en $[0.0, 1.0]$ (`predict_proba(X)[:, 1]`).
-- `pred_conflicto`: entero `1` si `prob_conflicto >= 0.21` (agregar arista de incompatibilidad $\{u, v\}$ al grafo no ponderado) o `0` en caso contrario.
+- `pred_conflicto`: entero `1` si `prob_conflicto >= 0.20` (agregar arista de incompatibilidad $\{u, v\}$ al grafo no ponderado) o `0` en caso contrario.
 
 ---
 
