@@ -2,7 +2,7 @@
 
 Expone la interfaz pública para que el módulo de construcción y coloreo del grafo
 pueda predecir probabilidades y aristas de incompatibilidad utilizando el modelo
-seleccionado en la Fase 3 (`KNN_Full_Unweighted`) y su umbral validado (`0.21`).
+seleccionado en la Fase 3 (`DecisionTree_Full_Unweighted`) y su umbral validado (`0.20`).
 """
 
 from src.inference.predict_conflicts import (

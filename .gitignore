@@ -16,10 +16,10 @@ venv/
 
 # Modelos entrenados serializados (se versionan los modelos oficiales)
 *.joblib
-!results/models/decision_tree_full_unweighted.joblib
-!results/models/decisiontree_full_unweighted.joblib
-!results/models/knn_full_unweighted.joblib
-!results/models/.gitkeep
+!backend/results/models/decision_tree_full_unweighted.joblib
+!backend/results/models/decisiontree_full_unweighted.joblib
+!backend/results/models/knn_full_unweighted.joblib
+!backend/results/models/.gitkeep
 
 # Caché de predicciones (regenerable)
-results/predictions/pair_probabilities_oof.csv
+backend/results/predictions/pair_probabilities_oof.csv
