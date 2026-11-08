@@ -1,0 +1,331 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Paquetes Principales ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{caption}
+
+% --- Configuración de Enlaces ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!80!black,
+    pdfauthor={Antonio Gómez y Luca Mamani},
+    pdftitle={Planificación de Mesas de Examen - TP Integrador Lógica y Grafos}
+}
+
+% --- Portada Sencilla ---
+\title{
+    \vspace{-1.0cm}
+    \textbf{\Large Instituto Politécnico General San Martín }\\
+    \vspace{0.2cm}
+    \textbf{\large Lógica y Teoría de Grafos}\\
+    \vspace{0.4cm}
+    \textbf{\LARGE Trabajo Práctico Integrador}\\
+    \vspace{0.3cm}
+    \textbf{\LARGE Planificación de Mesas de Examen mediante Aprendizaje Automático y Coloreo de Grafos con Pesos}
+}
+\author{
+    \textbf{Antonio Gómez} \and \textbf{Luca Mamani}
+}
+\date{Noviembre 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este trabajo práctico aborda el problema de asignación de turnos para exámenes universitarios (\textit{University Examination Timetabling Problem}) combinando modelos de aprendizaje automático, teoría de grafos y una aplicación web interactiva. A partir del conjunto de datos de la \textit{University of Nottingham} (Semestre 1, 1994--95), se predice la probabilidad de conflicto entre pares de materias para construir un grafo no dirigido con pesos $G(\tau) = (V, E(\tau), w)$, donde el peso de cada arista modela la intensidad o certidumbre del conflicto. Sobre este grafo se implementan y evalúan algoritmos de coloreo voraz (\textit{greedy}), incluyendo la heurística clásica de Welsh-Powell y una variante adaptada por grado ponderado (\textit{Weighted Largest First}), con el objetivo estricto de respetar la capacidad máxima de 32 turnos del calendario académico. Se evalúan diferentes modelos supervisados mediante una partición por materias (\textit{Node-Holdout Split}), seleccionando como modelo oficial un Árbol de Decisión calibrado internamente ($\tau = 0,20$). El cronograma obtenido asigna la totalidad de los 800 exámenes en exactamente 11 turnos. Al contrastarlo con las inscripciones reales de la cohorte 1994, el sistema separa exitosamente el 81,42\% de los pares en conflicto y reduce un 87,02\% las incidencias estudiante-par respecto del escenario base de turno único, analizando en detalle los compromisos operativos y las limitaciones informativas inherentes a la predicción previa a la inscripción.
+\end{abstract}
+
+\vspace{0.3cm}
+\tableofcontents
+\vspace{0.5cm}
+\hrule
+\vspace{0.5cm}
+
+% =============================================================================
+\section{Introducción y Descripción del Problema}
+% =============================================================================
+
+\subsection{Contexto y Definición del Problema}
+La secretaría académica de una facultad debe confeccionar el cronograma de exámenes finales de cada período lectivo. La planificación enfrenta dos requerimientos contrapuestos:
+\begin{enumerate}[label=\alph*)]
+    \item \textbf{Disponibilidad estudiantil:} Evitar que dos asignaturas con estudiantes en común se programen en el mismo día y turno horario, ya que la superposición horaria (\textit{clash}) impide al alumno rendir ambas materias.
+    \item \textbf{Límite de turnos de examen:} El calendario académico dispone de una cantidad máxima de turnos (en el caso analizado, 32 turnos distribuidos en dos semanas hábiles), por lo que resulta inviable asignar un turno exclusivo a cada materia.
+\end{enumerate}
+
+En la práctica, las fechas de examen deben fijarse y publicarse antes de que los estudiantes formalicen su inscripción. En consecuencia, la matriz de incompatibilidades no se conoce con certeza de antemano. El objetivo de este proyecto es estimar qué pares de materias presentarán conflicto en una nueva cohorte y utilizar dichas estimaciones para construir un cronograma que respete las restricciones temporales.
+
+\subsection{Modelado mediante Teoría de Grafos con Pesos}
+El problema de asignación de turnos puede modelarse formalmente como un problema de \textbf{coloreo de vértices en grafos ponderados}:
+\begin{itemize}
+    \item Cada materia o examen a calendarizar se representa como un vértice $u \in V$. Para el padrón de Nottingham, $|V| = 800$.
+    \item Una incompatibilidad estimada entre dos asignaturas se representa como una arista no dirigida $\{u, v\} \in E$.
+    \item Cada arista $\{u, v\}$ posee una función de peso $w: E \to \mathbb{R}^+$. En el grafo predicho por el modelo de aprendizaje automático, el peso corresponde a la certidumbre o probabilidad estimada de conflicto:
+    \begin{equation}
+        w(u, v) = \hat{p}_{uv} \in [\tau, 1]
+    \end{equation}
+    mientras que en el grafo real de referencia u oráculo, el peso representa la cardinalidad exacta de la población afectada: $w_{\text{real}}(u, v) = \text{cant\_estudiantes\_afectados}$.
+    \item Cada turno de examen disponible se modela como un color entero $c \in \mathbb{N}_0$.
+\end{itemize}
+
+Una asignación válida de turnos corresponde a un coloreo propio de vértices, donde ningún par de vértices adyacentes comparte el mismo color:
+\begin{equation}
+    \forall \{u, v\} \in E \implies c(u) \neq c(v)
+\end{equation}
+Dado que determinar el número cromático $\chi(G)$ es un problema $\mathcal{NP}$-difícil, se emplean algoritmos constructivos voraces (\textit{greedy}) que obtienen soluciones válidas en tiempo polinomial.
+
+\subsection{Decisiones de Diseño}
+\begin{enumerate}
+    \item \textbf{Clasificación binaria probabilística frente a regresión directa:} Se optó por formular la tarea de aprendizaje automático como clasificación probabilística ($y = 1$ si hay conflicto, $y = 0$ si no lo hay). En la confección de cronogramas, la presencia de estudiantes compartidos constituye una restricción lógica estricta que prohíbe el solapamiento, independientemente de la cantidad exacta de alumnos. Asimismo, en una regresión sobre el número de alumnos afectados, la gran proporción de pares sin conflicto (98,6\%) sesga negativamente las estimaciones lineales hacia cero.
+    \item \textbf{Desacoplamiento entre predicción y coloreo ponderado:} El modelo predictivo estima probabilidades $\hat{p}_{uv} \in [0, 1]$. A partir de un umbral de decisión $\tau \in (0, 1)$, se define el subgrafo inducido por las aristas activas con sus pesos asociados:
+    \begin{equation}
+        E(\tau) = \left\{ \{u, v\} \subset V \mid u \neq v \land \hat{p}_{uv} \ge \tau \right\}, \quad w(u, v) = \hat{p}_{uv}
+    \end{equation}
+    El algoritmo de coloreo opera sobre $G(\tau) = (V, E(\tau), w)$, garantizando que ninguna arista predicha sea violada en el cronograma resultante y permitiendo priorizar el orden de coloreo mediante el grado ponderado de cada nodo.
+    \item \textbf{Compromiso operativo entre turnos y choques:} En este esquema, los dos tipos de error de clasificación tienen implicancias diferentes:
+    \begin{itemize}
+        \item \textit{Falsos Negativos (FN):} Conflictos reales no detectados por el modelo. Pueden provocar que dos materias incompatibles compartan turno, generando choques para los alumnos.
+        \item \textit{Falsos Positivos (FP):} Conflictos predichos donde en la realidad no hay estudiantes compartidos. Agregan aristas innecesarias que aumentan el grado de los nodos y pueden forzar al algoritmo a requerir una mayor cantidad de turnos.
+    \end{itemize}
+    El umbral $\tau$ permite explorar este compromiso operativo: reducir el umbral incorpora más aristas de conflicto al grafo, incrementando las restricciones que debe resolver el algoritmo de coloreo y aumentando potencialmente los turnos requeridos; por el contrario, valores mayores relajan las restricciones, lo que facilita cronogramas más compactos a costa de tolerar más choques reales no detectados.
+\end{enumerate}
+
+% =============================================================================
+\section{Datos Utilizados y Preprocesamiento}
+% =============================================================================
+
+\subsection{Comparación y Selección del Conjunto de Datos}
+Se evaluaron tres conjuntos de datos públicos de uso extendido en la literatura de planificación de exámenes:
+\begin{enumerate}
+    \item \textbf{Toronto Benchmark Dataset (Carter et al., 1996):} Colección de 13 instancias de 12 instituciones. Los archivos contienen identificadores numéricos y listas de inscripción por alumno, pero no incluyen metadatos curriculares interpretables (nombres de materias, carreras, departamentos, niveles de cursada ni definiciones de calendario académico).
+    \item \textbf{Purdue University UniTime Dataset (MISTA 2013):} 9 archivos XML de gran tamaño (~153 MB). Al igual que en Toronto, los exámenes están renumerados arbitrariamente en cada semestre sin metadatos curriculares que permitan vincular materias entre períodos.
+    \item \textbf{University of Nottingham Dataset (1994--95):} Padrón correspondiente al Semestre 1 del año 1994--95. Contiene los nombres de las 800 materias, sus códigos curriculares modulares, duraciones de examen y las inscripciones de los estudiantes.
+\end{enumerate}
+
+Se seleccionó el conjunto de datos de Nottingham debido a que la nomenclatura de los códigos de examen codifica información curricular fundamental que permite generar características explicativas (\textit{features}):
+\begin{itemize}
+    \item \textbf{Departamento / Área académica:} Los dos primeros caracteres del código identifican el departamento (por ejemplo, \texttt{AA} para Historia del Arte, \texttt{C8} para Psicología, \texttt{M1} para Matemáticas).
+    \item \textbf{Nivel / Año de cursada:} El tercer carácter del código representa el nivel formativo (\texttt{1} para primer año, \texttt{2} para segundo año, \texttt{3} para tercer año, \texttt{4} para posgrado, \texttt{0} o \texttt{A} para introductorias).
+    \item \textbf{Período de examen:} El sufijo (como \texttt{E1}) especifica la instancia de evaluación dentro del calendario.
+\end{itemize}
+
+\subsection{Preprocesamiento y Extracción de Características}
+Para modelar las relaciones de conflicto entre pares de materias, se construyó un conjunto de pares no ordenados $\{u, v\}$ con $u \neq v$. A partir de los 800 exámenes se generan:
+\begin{equation}
+    \binom{800}{2} = \frac{800 \times 799}{2} = 319.600 \text{ pares de materias}
+\end{equation}
+
+Para cada par se definieron las siguientes características curriculares y estructurales:
+\begin{enumerate}
+    \item \textbf{Mismo departamento (\texttt{same\_dept}):} Variable binaria indicando si ambos exámenes pertenecen a la misma unidad académica.
+    \item \textbf{Mismo año de cursada (\texttt{same\_year}):} Variable binaria que indica coincidencia en el nivel formativo deducido del código.
+    \item \textbf{Diferencia de año (\texttt{year\_diff}):} Distancia numérica absoluta entre los niveles formativos.
+    \item \textbf{Misma duración (\texttt{same\_duration}):} Coincidencia en la duración pautada de la mesa de examen.
+    \item \textbf{Inscripciones individuales y combinadas:} Tamaño de la matrícula estimada de cada materia ($n_u, n_v$) y su producto $n_u \cdot n_v$.
+    \item \textbf{Jaccard de co-departamento y nivel:} Indicador de cercanía curricular entre las áreas de pertenencia.
+\end{enumerate}
+
+% =============================================================================
+\section{Formulación y Modelado de Machine Learning}
+% =============================================================================
+
+\subsection{Estrategia de Partición: Node-Holdout Split}
+Un error metodológico frecuente al modelar pares en grafos consiste en realizar un muestreo aleatorio uniforme sobre las aristas (\textit{Edge Split}). En dicho escenario, si el par $\{A, B\}$ se asigna al conjunto de entrenamiento y el par $\{A, C\}$ al de prueba, el modelo memoriza el comportamiento específico del nodo $A$ (\textit{data leakage}).
+
+Para evaluar la capacidad real de generalización hacia nuevas asignaturas, se implementó una partición estricta por materias (\textbf{Node-Holdout Split}):
+\begin{itemize}
+    \item Se reserva un subconjunto disjunto de materias $V_{\text{test}} \subset V$ (20\% de los nodos, 160 materias).
+    \item El conjunto de entrenamiento $E_{\text{train}}$ se compone exclusivamente de pares donde ambos vértices pertenecen a $V_{\text{train}}$:
+    \begin{equation}
+        E_{\text{train}} = \left\{ \{u, v\} \subset V \mid u, v \in V_{\text{train}} \right\}
+    \end{equation}
+    \item El conjunto de prueba contiene pares donde al menos una de las materias pertenece a $V_{\text{test}}$.
+\end{itemize}
+
+\subsection{Comparación de Modelos Supervisados}
+Se evaluaron dos familias de modelos: Árboles de Decisión (\textit{Decision Trees}) y K-Vecinos más Cercanos (\textit{KNN}), evaluando tanto regímenes balanceados como no balanceados. La Tabla~\ref{tab:model_comparison} resume el desempeño obtenido en la partición por materias.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparación de desempeño de modelos sobre el conjunto de prueba (Node-Holdout).}
+\label{tab:model_comparison}
+\begin{tabularx}{\textwidth}{lccccc}
+\toprule
+\textbf{Modelo} & \textbf{Régimen} & \textbf{Precisión (\%)} & \textbf{Recall (\%)} & \textbf{F1-Score} & \textbf{ROC-AUC} \\
+\midrule
+Árbol de Decisión & Sin balancear ($\tau = 0,20$) & \textbf{37,35} & 16,99 & \textbf{0,2335} & \textbf{0,7412} \\
+Árbol de Decisión & Balanceado & 14,21 & \textbf{58,32} & 0,2286 & 0,7150 \\
+KNN ($k=5$) & Sin balancear & 22,41 & 12,10 & 0,1571 & 0,6520 \\
+KNN ($k=5$) & Balanceado & 9,84 & 48,15 & 0,1635 & 0,6310 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El Árbol de Decisión sin balancear con umbral seleccionado $\tau = 0,20$ demostró la mayor precisión en la detección de aristas de conflicto (37,35\% frente al 22,41\% de KNN). Al no requerir normalización previa y proporcionar reglas interpretables sobre las variables de nivel y departamento, fue seleccionado como el modelo oficial del sistema.
+
+% =============================================================================
+\section{Algoritmos de Grafos y Asignación de Turnos}
+% =============================================================================
+
+\subsection{Estructura del Grafo Ponderado}
+Al fijar el umbral oficial $\tau = 0,20$, el grafo de conflictos $G(\tau) = (V, E(\tau), w)$ presenta las siguientes propiedades topológicas:
+\begin{itemize}
+    \item \textbf{Vértices ($|V|$):} 800 asignaturas.
+    \item \textbf{Aristas activas ($|E|$):} 2.032 pares en conflicto predicho ($\hat{p}_{uv} \ge 0,20$).
+    \item \textbf{Pesos ($w$):} Cada arista porta su probabilidad estimada $w(u, v) \in [0.20, 1.00]$, con un promedio de 0,412.
+    \item \textbf{Densidad:} $\delta = \frac{2 \times 2.032}{800 \times 799} \approx 0,00636$ (grafo disperso).
+    \item \textbf{Vértices aislados:} 115 materias (sin ningún conflicto predicho).
+    \item \textbf{Componentes conexas:} 122 componentes (una componente gigante principal y múltiples subgrafos aislados).
+\end{itemize}
+
+\subsection{Heurísticas de Coloreo Voraz y Adaptación Ponderada}
+El algoritmo de coloreo asigna colores enteros $0, 1, 2, \dots$ de forma secuencial. Dado un ordenamiento de los vértices $(v_1, v_2, \dots, v_n)$, cada vértice $v_i$ recibe el menor color disponible que no haya sido utilizado por ninguno de sus vecinos adyacentes ya coloreados:
+\begin{equation}
+    c(v_i) = \min \left\{ k \in \mathbb{N}_0 \mid \forall u \in N(v_i) \cap \{v_1, \dots, v_{i-1}\}, c(u) \neq k \right\}
+\end{equation}
+
+Se implementaron y compararon diversas estrategias de ordenamiento:
+\begin{enumerate}
+    \item \textbf{Welsh-Powell Estándar (\textit{Largest First}):} Ordena los vértices por grado topológico decreciente:
+    \begin{equation}
+        d(u) = |N(u)|
+    \end{equation}
+    Colorea primero las materias con mayor cantidad de materias incompatibles.
+    \item \textbf{Welsh-Powell Ponderado (\textit{Weighted Largest First}):} Ordena los vértices según su grado ponderado o fuerza nodal (\textit{node strength}):
+    \begin{equation}
+        s(u) = \sum_{v \in N(u)} w(u, v) = \sum_{v \in N(u)} \hat{p}_{uv}
+    \end{equation}
+    Esta variante prioriza no solo la cantidad de vecinos en conflicto, sino la certidumbre acumulada de los mismos, asegurando que las materias centrales en el conflicto sean acomodadas en los primeros turnos.
+    \item \textbf{DSATUR (\textit{Degree of Saturation}):} Heurística dinámica que en cada paso selecciona el vértice con mayor número de colores distintos entre sus vecinos adyacentes.
+    \item \textbf{Smallest Last (Matula \& Beck):} Elimina iterativamente vértices de grado mínimo para generar un orden de coloreo inverso.
+\end{enumerate}
+
+\subsection{Propiedades Algebraicas y Garantías de Factibilidad}
+Una propiedad central del coloreo voraz establece que el número total de colores requeridos está acotado superiormente por el grado máximo del grafo más uno:
+\begin{equation}
+    \chi(G) \le \chi_{\text{greedy}}(G) \le \Delta(G) + 1
+\end{equation}
+Asimismo, el Teorema de Welsh-Powell acota el número de colores por:
+\begin{equation}
+    \chi(G) \le \max_{i} \min(d(v_i) + 1, i)
+\end{equation}
+
+Para el grafo predicho $G(0,20)$, tanto la heurística clásica de Welsh-Powell como la heurística de Welsh-Powell ponderado resolvieron el coloreo empleando \textbf{exactamente 11 turnos}. Puesto que el calendario institucional admite hasta 32 turnos:
+\begin{equation}
+    11 \text{ turnos utilizados} \le 32 \text{ turnos disponibles} \implies \text{Cronograma estrictamente factible}
+\end{equation}
+La solución no solo respeta la capacidad del calendario, sino que deja un margen holgado de 21 turnos libres que la secretaría académica puede utilizar para separar mesas de examen en días alternos o espaciar materias del mismo departamento.
+
+% =============================================================================
+\section{Implementación del Sistema y Aplicación Web Frontend}
+% =============================================================================
+
+\subsection{Arquitectura General y Desacoplamiento (Contract-First)}
+El sistema fue estructurado mediante un desacoplamiento estricto entre el motor algorítmico y la interfaz de usuario:
+\begin{itemize}
+    \item \textbf{Backend REST API (FastAPI):} Expone servicios para consultar el catálogo de materias, calcular métricas topológicas de grafos ponderados, generar cronogramas y evaluar la solución contra la cohorte histórica.
+    \item \textbf{Frontend SPA (React 18 + TypeScript + Vite + TailwindCSS):} Interfaz gráfica interactiva estructurada según el paradigma \textit{Contract-First}. Un cliente de datos (\texttt{apiClient.ts}) permite operar tanto en modo conectado contra la API viva como en modo local offline mediante precomputaciones JSON (\textit{mock data}), garantizando disponibilidad continua e independencia de despliegue.
+\end{itemize}
+
+\subsection{Componentes de la Interfaz de Usuario}
+La interfaz web se diseñó con foco en la usabilidad y la toma de decisiones académicas:
+\begin{enumerate}
+    \item \textbf{Panel de Métricas Clave (KPIs):} Exhibe visualmente el cumplimiento del calendario (11 de 32 turnos), el porcentaje de alumnos protegidos (87,02\%), la precisión de aristas y la comparación contra el oráculo real.
+    \item \textbf{Control Deslizante de Umbral de Decisión ($\tau$):} Permite al usuario ajustar dinámicamente el umbral entre 0,05 y 0,95, observando en tiempo real la variación en la densidad de aristas y la cantidad de turnos requeridos mediante un gráfico de barrido (\textit{sweep curve}).
+    \item \textbf{Visualizador Topológico del Grafo de Conflictos:} Renderizado en Canvas 2D mediante un algoritmo de fuerzas (\textit{Force-Directed Layout}). Permite inspeccionar nodos por departamento, visualizar aristas con grosor proporcional al peso $w(u, v)$ e interactuar con el vecindario inmediato de cualquier materia.
+    \item \textbf{Explorador y Distribuidor de Turnos:} Vista detallada de los exámenes asignados a cada turno horario, con filtros por unidad académica, código y duración de la prueba.
+\end{enumerate}
+
+% =============================================================================
+\section{Evaluación Experimental y Comparativa contra la Realidad}
+% =============================================================================
+
+\subsection{Validación Ex-Post con las Inscripciones de 1994}
+Para cuantificar el impacto real del cronograma generado, se contrastó la asignación de 11 turnos con la matriz completa de inscripciones observadas en la cohorte 1994. En dicha cohorte se registraron 4.468 pares de materias con alumnos compartidos, involucrando 28.677 incidencias estudiante-par distribuidas en 3.086 estudiantes únicos. La Tabla~\ref{tab:evaluation_results} resume los resultados.
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluación del cronograma oficial ($\tau = 0,20$, Welsh-Powell) contra la realidad observada.}
+\label{tab:evaluation_results}
+\begin{tabularx}{\textwidth}{lcc}
+\toprule
+\textbf{Métrica de Evaluación} & \textbf{Valor Absoluto} & \textbf{Porcentaje / Rendimiento} \\
+\midrule
+Turnos de examen utilizados & 11 turnos & 34,38\% de la capacidad (32 máx.) \\
+Pares reales con conflicto & 4.468 pares & 100,00\% \\
+Pares en conflicto \textbf{separados exitosamente} & \textbf{3.638 pares} & \textbf{81,42\%} \\
+Pares reales en choque no prevenidos (FN) & 830 pares & 18,58\% \\
+Incidencias estudiante-par totales en turno único & 28.677 & 100,00\% \\
+Incidencias estudiante-par \textbf{eliminadas} & \textbf{24.954} & \textbf{87,02\%} \\
+Incidencias estudiante-par residuales & 3.723 & 12,98\% \\
+Estudiantes únicos con al menos un choque residual & 1.945 alumnos & 63,03\% de la población \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Análisis Crítico de Falsos Negativos y Limitaciones del Problema}
+Si bien el sistema logra separar el 81,42\% de los pares incompatibles y eliminar el 87,02\% de las incidencias alumno-par, se observa que un 63,03\% de los estudiantes conserva al menos una superposición horaria en su grilla personal. Este fenómeno se explica por la estructura combinatoria del problema:
+\begin{itemize}
+    \item Un estudiante promedio rinde entre 4 y 6 exámenes. Si tiene inscripciones en $k$ materias, existen $\binom{k}{2}$ pares que deben ser prevenidos simultáneamente. Para $k = 5$, son 10 pares; basta que un único par sea omitido por el modelo (Falso Negativo) para que el alumno experimente un choque en su calendario.
+    \item La predicción previa a la inscripción adolece de un techo de información: las características curriculares (departamento y año) capturan con alta precisión las carreras tradicionales y homogéneas, pero no pueden predecir elecciones optativas transversales, dobles titulaciones o materias recursadas entre años distantes.
+\end{itemize}
+
+% =============================================================================
+\section{Uso Crítico y Transparente de Herramientas de Inteligencia Artificial}
+% =============================================================================
+
+\subsection{Metodología de Trabajo y Rol de la Inteligencia Artificial}
+En el desarrollo de este trabajo práctico integrador se emplearon modelos de lenguaje e inteligencia artificial generativa como herramientas avanzadas de asistencia al desarrollo (\textit{pair programming}), automatización de pruebas y soporte en la redacción técnica. Lejos de delegar la resolución ciega de los problemas, el equipo adoptó una postura metodológica rigurosa basada en el principio de \textbf{responsabilidad y verificación formal humana}: cada fragmento de código, consulta algorítmica y demostración teórica fue analizada, contrastada y verificada contra los fundamentos de la teoría de grafos y las especificaciones del problema.
+
+\subsection{Áreas de Asistencia e Intervención}
+La asistencia de las herramientas de IA se focalizó en los siguientes ejes concretos:
+\begin{enumerate}
+    \item \textbf{Exploración algorítmica y prototipado rápido:} Formulación de heurísticas greedy adaptadas a grafos ponderados en NetworkX, comparación de estrategias de ordenamiento (Welsh-Powell, DSATUR, Matula-Beck) y optimización de estructuras vectorizadas en Pandas para procesar los 319.600 pares de materias en memoria de manera eficiente.
+    \item \textbf{Diseño de suites de pruebas exhaustivas:} Generación de pruebas unitarias basadas en propiedades e invariantes algebraicos (verificación de que la suma de verdaderos positivos y falsos positivos equivalga exactamente al total de aristas predichas, confirmación formal de la validez del coloreo propio y cobertura de casos extremos como grafos vacíos o umbrales límite).
+    \item \textbf{Desarrollo full-stack y componentes web:} Aceleración en la estructura tipada de TypeScript, maquetación responsiva con TailwindCSS y diseño del motor Canvas para el renderizado del grafo interactivo.
+    \item \textbf{Detección y mitigación de alucinaciones teóricas:} Durante las primeras iteraciones, las herramientas de IA sugirieron afirmaciones imprecisas sobre la monotonicidad estricta entre la reducción del umbral $\tau$ y el aumento del número cromático $\chi(G)$, así como el uso erróneo de particiones aleatorias sobre aristas (\textit{Edge Split}). La intervención crítica del equipo corrigió estos desvíos, fundamentando formalmente por qué la partición por materias (\textit{Node-Holdout}) era la única metodológicamente válida y demostrando que la topología local de los nuevos enlaces puede ocasionalmente mantener o variar no monótonamente los turnos en heurísticas greedy.
+\end{enumerate}
+
+\subsection{Reflexión Epistemológica y Formación Profesional}
+La experiencia acumulada evidencia que las herramientas de IA son amplificadores excepcionales de productividad técnica cuando son guiadas por profesionales con sólida formación conceptual. La capacidad de detectar incongruencias lógicas, validar invariantes matemáticos y exigir rigor formal es una competencia humana irremplazable, consolidando a la IA como un copiloto de ingeniería de software y análisis de datos de alto valor pedagógico.
+
+% =============================================================================
+\section{Conclusiones y Trabajo Futuro}
+% =============================================================================
+
+El desarrollo de este trabajo integrador demostró la viabilidad de articular modelos de aprendizaje automático predictivo con algoritmos clásicos de coloreo de grafos con pesos para resolver problemas complejos de logística universitaria:
+\begin{enumerate}
+    \item \textbf{Eficacia del cronograma:} Se logró calendarizar la totalidad de los 800 exámenes en tan solo 11 turnos, satisfaciendo holgadamente la restricción máxima de 32 turnos del calendario académico de Nottingham.
+    \item \textbf{Mitigación sustancial de choques:} El sistema separa más del 81\% de los pares en conflicto y reduce en un 87\% las incidencias estudiante-par, ofreciendo a las secretarías académicas un punto de partida cuantitativamente superior a la planificación manual o intuitiva.
+    \item \textbf{Perspectivas futuras:} Como líneas de extensión, se plantea incorporar etapas de optimización local (\textit{Local Search} o algoritmos meméticos) sobre el coloreo inicial para minimizar las aristas de conflicto residuales de mayor peso, así como explorar modelos de \textit{Graph Neural Networks} (GNN) que aprendan directamente representaciones topológicas sobre el grafo curricular de la carrera.
+\end{enumerate}
+
+% =============================================================================
+\section*{Referencias Bibliográficas}
+\addcontentsline{toc}{section}{Referencias Bibliográficas}
+% =============================================================================
+
+\begin{enumerate}[label={[\arabic*]}]
+    \item Carter, M. W., Laporte, G., \& Lee, S. Y. (1996). Examination timetabling: Algorithmic strategies and applications. \textit{Journal of the Operational Research Society}, 47(3), 373--383.
+    \item Welsh, D. J. A., \& Powell, M. B. (1967). An upper bound for the chromatic number of a graph and its application to timetabling problems. \textit{The Computer Journal}, 10(1), 85--86.
+    \item Brélaz, D. (1979). New methods to color the vertices of a graph. \textit{Communications of the ACM}, 22(4), 251--256.
+    \item Matula, D. W., \& Beck, L. L. (1983). Smallest-last ordering and clustering and graph coloring algorithms. \textit{Journal of the ACM}, 30(3), 417--427.
+    \item Bondy, J. A., \& Murty, U. S. R. (2008). \textit{Graph Theory}. Graduate Texts in Mathematics, Springer.
+    \item Hastie, T., Tibshirani, R., \& Friedman, J. (2009). \textit{The Elements of Statistical Learning: Data Mining, Inference, and Prediction}. Springer Series in Statistics.
+\end{enumerate}
+
+\end{document}
