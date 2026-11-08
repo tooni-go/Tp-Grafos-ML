@@ -1,0 +1,58 @@
+[
+  {
+    "threshold": 0.05,
+    "turnos": 139,
+    "alumnos_protegidos_pct": 98.93,
+    "precision_aristas": 0.1063,
+    "aristas": 23286
+  },
+  {
+    "threshold": 0.1,
+    "turnos": 15,
+    "alumnos_protegidos_pct": 91.59,
+    "precision_aristas": 0.2769,
+    "aristas": 3749
+  },
+  {
+    "threshold": 0.15,
+    "turnos": 14,
+    "alumnos_protegidos_pct": 89.55,
+    "precision_aristas": 0.3087,
+    "aristas": 3019
+  },
+  {
+    "threshold": 0.2,
+    "turnos": 11,
+    "alumnos_protegidos_pct": 87.02,
+    "precision_aristas": 0.3735,
+    "aristas": 2032
+  },
+  {
+    "threshold": 0.25,
+    "turnos": 12,
+    "alumnos_protegidos_pct": 84.76,
+    "precision_aristas": 0.4123,
+    "aristas": 1659
+  },
+  {
+    "threshold": 0.3,
+    "turnos": 9,
+    "alumnos_protegidos_pct": 80.94,
+    "precision_aristas": 0.5053,
+    "aristas": 1029
+  },
+  {
+    "threshold": 0.4,
+    "turnos": 9,
+    "alumnos_protegidos_pct": 76.99,
+    "precision_aristas": 0.6069,
+    "aristas": 669
+  },
+  {
+    "threshold": 0.5,
+    "turnos": 9,
+    "alumnos_protegidos_pct": 73.33,
+    "precision_aristas": 0.6775,
+    "aristas": 524
+  }
+]
