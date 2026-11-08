@@ -1,7 +1,7 @@
 /**
  * Cliente desacoplado (Contract-First).
  *  - Sin VITE_API_URL  → modo "mock": lee los JSON de src/mock (precalculados para τ = 0.20).
- *  - Con VITE_API_URL  → modo "api": GET /api/schedule | /api/stats | /api/graph | /api/sweep
+ *  - Con VITE_API_URL  → modo "api": GET /api/v1/schedule | /api/v1/schedule/evaluate | /api/v1/graph | /api/v1/schedule/sweep
  *
  * Los componentes sólo ven los tipos de ../types. Si los JSON reales tienen otras claves,
  * se adaptan SOLAMENTE las funciones toSubject / toMetrics / toSweep / toGraph de este archivo.
@@ -62,16 +62,16 @@ function toMetrics(raw: unknown, tau: number): Metrics {
   const oracle = (r.referencia_oraculo ?? m.referencia_oraculo ?? m.oraculo ?? r.oraculo) as R | undefined
   const knn = pick(m, 'precision_knn', 'knn_precision') ?? 22.41
 
-  const choquesPct = num(pick(ev, 'pct_alumnos_en_choque', 'choques_pct'))
+  const choquesPct = num(pick(ev, 'pct_alumnos_en_choque', 'choques_pct', 'clash_student_percentage'))
   const rawProtegidos = pick(m, 'alumnos_protegidos_pct', 'alumnos_protegidos', 'pct_protegidos') ??
     (choquesPct !== undefined ? 100 - choquesPct : undefined)
 
   return {
     threshold: num(pick(m, 'threshold', 'umbral', 'tau')) ?? num(r.threshold) ?? tau,
-    turnos_usados: num(pick(ev, 'turnos', 'turnos_usados', 'n_turnos')) ?? num(pick(m, 'turnos_usados', 'turnos')) ?? 0,
-    max_turnos: num(pick(m, 'max_turnos', 'tope_turnos')) ?? 32,
+    turnos_usados: num(pick(ev, 'turnos', 'turnos_usados', 'n_turnos', 'turns_count')) ?? num(pick(m, 'turnos_usados', 'turnos', 'turns_count')) ?? 0,
+    max_turnos: num(pick(m, 'max_turnos', 'tope_turnos', 'max_allowed_turns')) ?? 32,
     alumnos_protegidos_pct: pct(rawProtegidos),
-    precision_arbol: pct(pick(ev, 'precision_aristas', 'precision') ?? pick(m, 'precision_arbol', 'precision')),
+    precision_arbol: pct(pick(ev, 'precision_aristas', 'precision', 'edge_precision') ?? pick(m, 'precision_arbol', 'precision', 'edge_precision')),
     precision_knn: knn === undefined ? undefined : pct(knn),
     turnos_oraculo:
       num(typeof oracle === 'object' && oracle ? pick(oracle as R, 'turnos', 'turnos_usados') : oracle) ?? 19,
@@ -95,11 +95,6 @@ function toSweep(raw: unknown): SweepPoint[] {
 
 function toGraph(raw: unknown): GraphData {
   const o = (raw ?? {}) as R
-  const nodes = ((o.nodes as unknown[]) ?? []).map((x) => {
-    const n = x as R
-    const id = String(pick(n, 'id', 'code') ?? '?')
-    return { id, label: String(pick(n, 'label', 'name') ?? id), color: pick(n, 'color') as string | undefined }
-  })
   const edges: GraphEdge[] = ((o.edges as unknown[]) ?? []).map((x) => {
     const e = x as R
     const f = pick(e, 'factors', 'factores')
@@ -110,15 +105,30 @@ function toGraph(raw: unknown): GraphData {
       factors: Array.isArray(f) ? f.map(String) : undefined,
     }
   })
+  const rawNodes = ((o.nodes as unknown[]) ?? []) as unknown[]
+  let nodes = rawNodes.map((x) => {
+    const n = x as R
+    const id = String(pick(n, 'id', 'code', 'exam_id') ?? '?')
+    return { id, label: String(pick(n, 'label', 'name', 'exam_name') ?? id), color: pick(n, 'color') as string | undefined }
+  })
+  if (nodes.length === 0 && edges.length > 0) {
+    const nodeIds = new Set<string>()
+    for (const e of edges) {
+      if (e.from) nodeIds.add(e.from)
+      if (e.to) nodeIds.add(e.to)
+    }
+    nodes = Array.from(nodeIds).map((id) => ({ id, label: id, color: undefined }))
+  }
   return { nodes, edges }
 }
 
 /* ───────── transporte ───────── */
 
-async function http(path: string, params: Record<string, string | number | undefined> = {}) {
+async function http(path: string, params: Record<string, string | number | boolean | undefined> = {}) {
   const qs = new URLSearchParams()
   for (const [k, v] of Object.entries(params)) if (v !== undefined) qs.set(k, String(v))
-  const res = await fetch(`${API}${path}?${qs}`)
+  const queryStr = qs.toString() ? `?${qs.toString()}` : ''
+  const res = await fetch(`${API}${path}${queryStr}`)
   if (!res.ok) throw new Error(`${path} respondió HTTP ${res.status}`)
   return res.json() as Promise<unknown>
 }
@@ -137,15 +147,15 @@ export const api = {
   exact: (tau: number) => API_MODE === 'api' || Math.abs(tau - MOCK_TAU) < 1e-9,
 
   async getSchedule(tau: number): Promise<Schedule> {
-    return toSchedule(API ? await http('/api/schedule', { threshold: tau }) : mockFile('schedule_0_20'))
+    return toSchedule(API ? await http('/api/v1/schedule', { threshold: tau }) : mockFile('schedule_0_20'))
   },
 
   async getStats(tau: number): Promise<Metrics> {
-    return toMetrics(API ? await http('/api/stats', { threshold: tau }) : mockFile('summary'), tau)
+    return toMetrics(API ? await http('/api/v1/schedule/evaluate', { threshold: tau }) : mockFile('summary'), tau)
   },
 
   async getSweep(): Promise<SweepPoint[]> {
-    return toSweep(API ? await http('/api/sweep') : (mockFile('sweep') ?? mockFile('summary')))
+    return toSweep(API ? await http('/api/v1/schedule/sweep') : (mockFile('sweep') ?? mockFile('summary')))
   },
 
   /** Sin `subject`: grafo completo. Con `subject`: sólo sus conflictos inmediatos. */
@@ -153,7 +163,7 @@ export const api = {
     let g = subject ? undefined : graphCache.get(tau)
     if (!g) {
       if (API) {
-        g = toGraph(await http('/api/graph', { threshold: tau, subject }))
+        g = toGraph(await http('/api/v1/graph', { threshold: tau, include_edges: true }))
       } else {
         const raw = mockFile('graph_0_20')
         if (!raw) throw new Error('Falta src/mock/graph_0_20.json para ver el grafo en modo offline.')
