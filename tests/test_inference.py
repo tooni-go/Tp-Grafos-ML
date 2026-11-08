@@ -315,15 +315,14 @@ class TestConflictInference(unittest.TestCase):
     def test_07_working_directory_independence(self) -> None:
         """Verifica que las rutas por defecto funcionen desde cualquier directorio de trabajo."""
         original_cwd = Path.cwd()
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            try:
                 os.chdir(tmpdir)
                 out = predict_conflict_pairs(self.sample_df)
                 self.assertEqual(len(out), 2)
                 self.assertEqual(out[PREDICTION_COLUMN].tolist(), [0, 1])
-        finally:
-            os.chdir(original_cwd)
-
+            finally:
+                os.chdir(original_cwd)
     def test_08_decoupling_and_single_source_of_truth(self) -> None:
         """Verifica que importar src.inference NO cargue src.models.compare_models."""
         check_code = (
