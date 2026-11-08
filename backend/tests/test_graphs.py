@@ -10,7 +10,8 @@ import pandas as pd
 
 from src.graphs.conflict_graph import (
     build_conflict_graph_from_predictions, build_real_graph, build_schedule,
-    count_turns, evaluate_against_real, greedy_coloring, sweep_thresholds, validate_coloring,
+    count_turns, count_unique_students_in_clash, evaluate_against_real,
+    greedy_coloring, sweep_thresholds, validate_coloring,
 )
 
 
@@ -72,6 +73,32 @@ class TestGraphs(unittest.TestCase):
         sch = build_schedule({"A": 0, "B": 1, "C": 1})
         self.assertEqual(sorted(sch), [0, 1])
         self.assertEqual(count_turns({"A": 0, "B": 3}), 4)
+
+    def test_unique_students_synthetic_case(self):
+        """Verifica conteo de personas únicas afectadas en un caso sintético controlado.
+
+        Escenario:
+        - Estudiante A: inscripto en materias '1', '2', '3' (3 materias).
+        - Estudiante B: inscripto en materias '1', '2' (2 materias).
+        - Estudiante C: inscripto en materias '3', '4' (2 materias).
+        - Cronograma: materias '1', '2' y '3' asignadas al turno 0; materia '4' al turno 1.
+
+        Resultado esperado:
+        - A tiene 3 pares en choque, pero cuenta como 1 sola persona.
+        - B tiene 1 par en choque, pero cuenta como 1 sola persona.
+        - C no tiene choques ('3' en turno 0 y '4' en turno 1).
+        - Total de personas únicas afectadas: 2 de 3 (66.67%).
+        """
+        coloring = {"1": 0, "2": 0, "3": 0, "4": 1}
+        student_exams = {
+            "Estudiante_A": ["1", "2", "3"],
+            "Estudiante_B": ["1", "2"],
+            "Estudiante_C": ["3", "4"],
+        }
+        total, affected, pct = count_unique_students_in_clash(coloring, student_exams)
+        self.assertEqual(total, 3)
+        self.assertEqual(affected, 2)
+        self.assertEqual(pct, 66.67)
 
 
 if __name__ == "__main__":

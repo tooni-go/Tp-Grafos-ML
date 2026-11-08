@@ -65,12 +65,13 @@ Tp-Grafos-ML/
 ## 5. Estado Actual del Desarrollo
 
 - **Investigación y Modelado ML (Completado):** Preparación diádica de datos, validación cruzada estratificada OOF (319.600 pares evaluados), calibración de umbrales óptimos y comparación de algoritmos.
-- **Backend API REST (Etapas 1 a 3 Completadas):**
+- **Backend API REST (Etapas 1 a 4 Completadas):**
   - **Catálogo de Exámenes:** Paginación, búsqueda y filtros sobre los 800 exámenes y sus departamentos.
   - **Grafo de Conflictos:** Consulta de métricas topológicas, lista de aristas con umbral configurable y consulta simétrica de probabilidades por par.
   - **Generación de Cronogramas:** Asignación de turnos con 7 heurísticas de coloreo, validación formal de adyacencia y control de capacidad del calendario ($\le 32$ turnos).
-  - **Cobertura de Pruebas:** 37 tests automatizados unitarios y de integración.
-- **Próximos Pasos:** Evaluación de cronogramas contra los conflictos reales observados (Etapa 4 del backend).
+  - **Evaluación vs. Cohorte 1994:** Auditoría de efectividad contra ground truth histórico, reducción del 87.02% de incidencias potenciales de solapamiento entre pares, métricas de alumnos únicos afectados y matriz de confusión de aristas.
+  - **Cobertura de Pruebas:** 43 tests automatizados unitarios y de integración.
+- **Próximos Pasos:** Integración con futura interfaz de usuario (frontend SPA).
 
 ---
 

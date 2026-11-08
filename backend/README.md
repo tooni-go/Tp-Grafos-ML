@@ -19,7 +19,8 @@ backend/
 ├── docs/
 │   ├── backend_implementation_plan.md # Hoja de ruta oficial de etapas
 │   ├── backend_stage_1.md             # Documentación de infraestructura y catálogo
-│   └── backend_stage_3.md             # Documentación de cronograma y coloreo
+│   ├── backend_stage_3.md             # Documentación de cronograma y coloreo
+│   └── backend_stage_4.md             # Documentación de evaluación vs cohorte 1994
 ├── results/
 │   ├── graphs/
 │   │   ├── schedule_0_20.json         # Cronograma de referencia oficial
@@ -99,7 +100,7 @@ Desde la carpeta `backend/`:
 ```bash
 python -m unittest discover -s tests -v
 ```
-*(Ejecuta los 37 tests automatizados cubriendo API, validaciones, NetworkX e inferencia ML).*
+*(Ejecuta los 43 tests automatizados cubriendo API, validaciones, NetworkX e inferencia ML).*
 
 ---
 

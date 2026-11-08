@@ -68,10 +68,10 @@ backend/
 | `GET` | `/api/v1/exams` | `department_code`, `search`, `limit`, `offset` | `200 OK`: Total y lista paginada de exámenes | 422 | **Implementado** |
 | `GET` | `/api/v1/exams/{exam_id}` | Path: `exam_id` | `200 OK`: Detalle de la materia | 404 | **Implementado** |
 | `GET` | `/api/v1/departments` | Ninguno | `200 OK`: Lista de departamentos y cantidad de exámenes | 500 | **Implementado** |
-| `GET` | `/api/v1/graph` | Query: `threshold`, `include_edges` | `200 OK`: Nodos, aristas activas, métricas topológicas | 400, 422 | *Etapa 2* |
-| `GET` | `/api/v1/conflicts/pair` | Query: `exam_id_1`, `exam_id_2`, `threshold` | `200 OK`: Probabilidad y predicción del par | 400, 404, 422 | *Etapa 2* |
-| `POST` | `/api/v1/schedule` | Body: `threshold`, `strategy` | `200 OK`: Cantidad de turnos, verificación $\le 32$, agenda | 400, 422 | *Etapa 3* |
-| `POST` | `/api/v1/schedule/evaluate` | Body: `threshold`, `strategy` | `200 OK`: Métricas vs 1994 (choques, alumnos afectados, TP/FP/FN) | 400, 422 | *Etapa 4* |
+| `GET` | `/api/v1/graph` | Query: `threshold`, `include_edges` | `200 OK`: Nodos, aristas activas, métricas topológicas | 400, 422 | **Implementado** |
+| `GET` | `/api/v1/conflicts/pair` | Query: `exam_id_1`, `exam_id_2`, `threshold` | `200 OK`: Probabilidad y predicción del par | 400, 404, 422 | **Implementado** |
+| `POST` | `/api/v1/schedule` | Body: `threshold`, `strategy` | `200 OK`: Cantidad de turnos, verificación $\le 32$, agenda | 400, 422 | **Implementado** |
+| `POST` | `/api/v1/schedule/evaluate` | Body: `threshold`, `strategy` | `200 OK`: Métricas vs 1994 (choques, alumnos afectados, TP/FP/FN) | 400, 422 | **Implementado** |
 
 ---
 
@@ -126,7 +126,10 @@ backend/
 - [x] Tests automatizados en `tests/test_api_schedule.py` (7 tests, incluyendo unicidad estricta de las 800 materias y cronogramas que exceden 32 turnos).
 - [x] Suite completa de 37 tests pasando al 100%.
 
-### Etapa 4 — Evaluación y Cierre [SIGUIENTE INCREMENTO]
-- [ ] Conexión con `evaluate_against_real` sobre los pares de 1994.
-- [ ] Endpoint `POST /api/v1/schedule/evaluate`.
-- [ ] Tests de integración punta a punta y documentación final.
+### Etapa 4 — Evaluación y Cierre [COMPLETADA]
+- [x] Conexión con `evaluate_against_real` sobre los pares de 1994.
+- [x] Endpoint `POST /api/v1/schedule/evaluate`.
+- [x] Precarga de `real_pairs_df` en `lifespan` para respuesta en milisegundos.
+- [x] Esquema Pydantic v2 `ScheduleEvaluationResponse`.
+- [x] Tests automatizados unitarios y de integración (43 tests pasando al 100%).
+- [x] Documentación de la etapa en `docs/backend_stage_4.md`.

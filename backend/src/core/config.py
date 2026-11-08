@@ -26,6 +26,8 @@ class Settings:
 
     # Rutas canónicas a datasets y artefactos
     EXAMS_CLEAN_PATH: Path = PROJECT_ROOT / "data" / "interim" / "exams_clean.csv"
+    STUDENTS_CLEAN_PATH: Path = PROJECT_ROOT / "data" / "interim" / "students_clean.csv"
+    ENROLMENTS_CLEAN_PATH: Path = PROJECT_ROOT / "data" / "interim" / "enrolments_clean.csv"
     SUBJECT_PAIRS_PATH: Path = PROJECT_ROOT / "data" / "processed" / "subject_pairs_poc.csv"
     PAIR_PROBABILITIES_PATH: Path = PROJECT_ROOT / "results" / "predictions" / "pair_probabilities_oof.csv"
     METRICS_SUMMARY_PATH: Path = PROJECT_ROOT / "results" / "metrics" / "metrics_summary.json"
