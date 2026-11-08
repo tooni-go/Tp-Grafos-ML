@@ -6,4 +6,6 @@ jupyter>=1.0.0
 ipykernel>=6.29.0
 matplotlib>=3.11.2
 networkx>=3.2
+fastapi>=0.110.0
+uvicorn>=0.28.0
 

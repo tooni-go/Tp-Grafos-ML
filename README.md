@@ -98,3 +98,27 @@ python -m src.graphs.run_schedule --sweep   # resultados en results/graphs/
 
 Detalle y resultados en [`docs/fase_3_grafo_y_coloreo.md`](docs/fase_3_grafo_y_coloreo.md).
 
+---
+
+## 6. Aplicación Web — Frontend y Backend API
+
+La aplicación web permite visualizar y auditar el cronograma de exámenes, explorar el grafo coloreado y ajustar el umbral de conflicto interactivo:
+
+### Iniciar el Frontend (React + TypeScript + Vite)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+La aplicación abrirá en `http://localhost:5173`. Por defecto funciona en modo **Offline (Mock)** con los resultados precalculados del modelo oficial ($\tau = 0.20$).
+
+### Iniciar el Backend API (FastAPI)
+```bash
+uvicorn src.api.main:app --reload --port 8000
+```
+Para conectar el frontend a la API en vivo y recalcular umbrales en tiempo real, configurar en `frontend/.env`:
+```env
+VITE_API_URL=http://localhost:8000
+```
+
+
