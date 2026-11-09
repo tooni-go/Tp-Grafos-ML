@@ -1,5 +1,8 @@
 # Backend — Servicio de Predicción y Asignación de Turnos de Exámenes
 
+> 🚀 **API en Producción (Render):** [https://tp-grafos-ml.onrender.com/api/v1/docs](https://tp-grafos-ml.onrender.com/api/v1/docs)  
+> 🌐 **Frontend Oficial (Vercel):** [https://tp-grafos-ml.vercel.app/](https://tp-grafos-ml.vercel.app/)
+
 Módulo backend desacoplado que coordina la inferencia de Machine Learning, la construcción del grafo de conflictos y el coloreo para la asignación de turnos universitarios (dataset Nottingham 1994).
 
 ---
