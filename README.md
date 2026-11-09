@@ -1,7 +1,7 @@
 # Tp-Grafos-ML — Planificación de Mesas de Examen Universitarias
 
-> 🌐 **Aplicación Web en Producción (Vercel):** [https://tp-grafos-ml.vercel.app/](https://tp-grafos-ml.vercel.app/)  
-> ⚙️ **API REST y Documentación Swagger (Render):** [https://tp-grafos-ml.onrender.com/api/v1/docs](https://tp-grafos-ml.onrender.com/api/v1/docs)
+> **Aplicación Web en Producción (Vercel):** [https://tp-grafos-ml.vercel.app/](https://tp-grafos-ml.vercel.app/)  
+> **API REST y Documentación Swagger (Render):** [https://tp-grafos-ml.onrender.com/api/v1/docs](https://tp-grafos-ml.onrender.com/api/v1/docs)
 
 Sistema de predicción de conflictos curriculares y asignación automática de turnos de exámenes finales (*Examination Timetabling Problem*) mediante Machine Learning tabular diádico, modelado con grafos y algoritmos de coloreo clásico, evaluado sobre el benchmark histórico de la *University of Nottingham (1994)*.
 
