@@ -21,9 +21,6 @@ venv/
 !backend/results/models/knn_full_unweighted.joblib
 !backend/results/models/.gitkeep
 
-# Caché de predicciones (regenerable)
-backend/results/predictions/pair_probabilities_oof.csv
-
 # IDEs y scratch temporales
 .vs/
 scratch/
